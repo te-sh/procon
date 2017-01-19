@@ -258,20 +258,21 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org42fac42">No.51</a></li>
-<li><a href="#org0bcca11">No.52</a></li>
-<li><a href="#orgb4cd00b">No.55</a></li>
-<li><a href="#orgd6ed781">No.56</a></li>
-<li><a href="#orgf5d464b">No.57</a></li>
-<li><a href="#org3650621">No.58</a></li>
-<li><a href="#org83e5963">No.63</a></li>
+<li><a href="#orgcaddab7">No.51</a></li>
+<li><a href="#org1e4233c">No.52</a></li>
+<li><a href="#orgef69d50">No.55</a></li>
+<li><a href="#org2a98cf7">No.56</a></li>
+<li><a href="#orgc0cd8d1">No.57</a></li>
+<li><a href="#org83c9947">No.58</a></li>
+<li><a href="#org3c91f68">No.63</a></li>
+<li><a href="#org66fee0d">No.64</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org42fac42" class="outline-2">
-<h2 id="org42fac42">No.51</h2>
-<div class="outline-text-2" id="text-org42fac42">
+<div id="outline-container-orgcaddab7" class="outline-2">
+<h2 id="orgcaddab7">No.51</h2>
+<div class="outline-text-2" id="text-orgcaddab7">
 <p>
 実装あるのみ。
 </p>
@@ -282,18 +283,18 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org0bcca11" class="outline-2">
-<h2 id="org0bcca11">No.52</h2>
-<div class="outline-text-2" id="text-org0bcca11">
+<div id="outline-container-org1e4233c" class="outline-2">
+<h2 id="org1e4233c">No.52</h2>
+<div class="outline-text-2" id="text-org1e4233c">
 <p>
 \(k\) 回目に前から取るか後ろから取るかで全探索する。
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgb4cd00b" class="outline-2">
-<h2 id="orgb4cd00b">No.55</h2>
-<div class="outline-text-2" id="text-orgb4cd00b">
+<div id="outline-container-orgef69d50" class="outline-2">
+<h2 id="orgef69d50">No.55</h2>
+<div class="outline-text-2" id="text-orgef69d50">
 <p>
 \(P_1(X1, Y1), P_2(X2, Y2), P_3(X3, Y3)\) とする。
 </p>
@@ -328,9 +329,9 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-orgd6ed781" class="outline-2">
-<h2 id="orgd6ed781">No.56</h2>
-<div class="outline-text-2" id="text-orgd6ed781">
+<div id="outline-container-org2a98cf7" class="outline-2">
+<h2 id="org2a98cf7">No.56</h2>
+<div class="outline-text-2" id="text-org2a98cf7">
 <p>
 \(D(100 + P) / 100\) で求められる。
 </p>
@@ -341,9 +342,9 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-orgf5d464b" class="outline-2">
-<h2 id="orgf5d464b">No.57</h2>
-<div class="outline-text-2" id="text-orgf5d464b">
+<div id="outline-container-orgc0cd8d1" class="outline-2">
+<h2 id="orgc0cd8d1">No.57</h2>
+<div class="outline-text-2" id="text-orgc0cd8d1">
 <p>
 1つのサイコロを振ったときの出る目の期待値は \(3.5\) である。
 </p>
@@ -354,24 +355,40 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org3650621" class="outline-2">
-<h2 id="org3650621">No.58</h2>
-<div class="outline-text-2" id="text-org3650621">
+<div id="outline-container-org83c9947" class="outline-2">
+<h2 id="org83c9947">No.58</h2>
+<div class="outline-text-2" id="text-org83c9947">
 <p>
 モンテカルロ法を使って実装あるのみ。
 </p>
 </div>
 </div>
 
-<div id="outline-container-org83e5963" class="outline-2">
-<h2 id="org83e5963">No.63</h2>
-<div class="outline-text-2" id="text-org83e5963">
+<div id="outline-container-org3c91f68" class="outline-2">
+<h2 id="org3c91f68">No.63</h2>
+<div class="outline-text-2" id="text-org3c91f68">
 <p>
 \(L\) が2で割り切れない場合または \(L/2\) が \(K\) で割り切れない場合は、\(\lfloor \lfloor L/2 \rfloor /K \rfloor\) 回かじる。
 </p>
 
 <p>
 そうでない場合は1回少なくかじる。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org66fee0d" class="outline-2">
+<h2 id="org66fee0d">No.64</h2>
+<div class="outline-text-2" id="text-org66fee0d">
+\begin{align*}
+F_{k+3} &= F_{k+2} \oplus F_{k+1} \\
+        &= (F_{k+1} \oplus F_{k}) \oplus F_{k+1} \\
+        &= (F_{k+1} \oplus F_{k+1}) \oplus F_{k} \\
+        &= F_{k}
+\end{align*}
+
+<p>
+となるので、\(F_k\) は周期3で循環している。
 </p>
 </div>
 </div>

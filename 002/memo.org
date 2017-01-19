@@ -61,3 +61,14 @@ $D (100 + P)$ が =int= を超える可能性があるので =long= を使う。
 $L$ が2で割り切れない場合または $L/2$ が $K$ で割り切れない場合は、$\lfloor \lfloor L/2 \rfloor /K \rfloor$ 回かじる。
 
 そうでない場合は1回少なくかじる。
+
+** No.64
+
+\begin{align*}
+F_{k+3} &= F_{k+2} \oplus F_{k+1} \\
+        &= (F_{k+1} \oplus F_{k}) \oplus F_{k+1} \\
+        &= (F_{k+1} \oplus F_{k+1}) \oplus F_{k} \\
+        &= F_{k}
+\end{align*}
+
+となるので、$F_k$ は周期3で循環している。
