@@ -258,17 +258,18 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org4c5b7a2">No.51</a></li>
-<li><a href="#org7e1dbb4">No.52</a></li>
-<li><a href="#orga4ed14d">No.56</a></li>
-<li><a href="#org2237b20">No.57</a></li>
+<li><a href="#org9a1adf9">No.51</a></li>
+<li><a href="#org01ba5e5">No.52</a></li>
+<li><a href="#org71249bf">No.55</a></li>
+<li><a href="#orge5e615e">No.56</a></li>
+<li><a href="#org053a69c">No.57</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org4c5b7a2" class="outline-2">
-<h2 id="org4c5b7a2">No.51</h2>
-<div class="outline-text-2" id="text-org4c5b7a2">
+<div id="outline-container-org9a1adf9" class="outline-2">
+<h2 id="org9a1adf9">No.51</h2>
+<div class="outline-text-2" id="text-org9a1adf9">
 <p>
 実装あるのみ。
 </p>
@@ -279,18 +280,55 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org7e1dbb4" class="outline-2">
-<h2 id="org7e1dbb4">No.52</h2>
-<div class="outline-text-2" id="text-org7e1dbb4">
+<div id="outline-container-org01ba5e5" class="outline-2">
+<h2 id="org01ba5e5">No.52</h2>
+<div class="outline-text-2" id="text-org01ba5e5">
 <p>
 \(k\) 回目に前から取るか後ろから取るかで全探索する。
 </p>
 </div>
 </div>
 
-<div id="outline-container-orga4ed14d" class="outline-2">
-<h2 id="orga4ed14d">No.56</h2>
-<div class="outline-text-2" id="text-orga4ed14d">
+<div id="outline-container-org71249bf" class="outline-2">
+<h2 id="org71249bf">No.55</h2>
+<div class="outline-text-2" id="text-org71249bf">
+<p>
+\(P_1(X1, Y1), P_2(X2, Y2), P_3(X3, Y3)\) とする。
+</p>
+
+<p>
+\(P_1,P_2,P_3\) の順序を入れ替えて、すべての入れ替えパターンで正方形が1つでもできるかどうかを調べる。
+</p>
+
+<p>
+\(\vec{v_1}=\overrightarrow{P_1P_2}\), \(\vec{v_2}=\overrightarrow{P_2P_3}\) とすると、正方形ができるためには次の条件が成り立つ必要がある。
+</p>
+
+<p>
+\[ |\vec{v_1}| = |\vec{v_2}| \]
+</p>
+
+<p>
+\[ \vec{v_1} \cdot \vec{v_2} = 0 \]
+</p>
+
+<p>
+このとき、\(P_1, P_4\) の位置ベクトルを \(\vec{p_1}, \vec{p_4}\) とすると、
+</p>
+
+<p>
+\[ \vec{p_4} = \vec{p_1} + \vec{v_2} \]
+</p>
+
+<p>
+となる。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orge5e615e" class="outline-2">
+<h2 id="orge5e615e">No.56</h2>
+<div class="outline-text-2" id="text-orge5e615e">
 <p>
 \(D(100 + P) / 100\) で求められる。
 </p>
@@ -301,9 +339,9 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org2237b20" class="outline-2">
-<h2 id="org2237b20">No.57</h2>
-<div class="outline-text-2" id="text-org2237b20">
+<div id="outline-container-org053a69c" class="outline-2">
+<h2 id="org053a69c">No.57</h2>
+<div class="outline-text-2" id="text-org053a69c">
 <p>
 1つのサイコロを振ったときの出る目の期待値は \(3.5\) である。
 </p>
