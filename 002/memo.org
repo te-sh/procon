@@ -164,3 +164,17 @@ o については、$j_4j_6 = x(C_o - x)$ を最大にするように $x$ を決
 l については、$j_{2,3}j_8 = {}_{y} C_2 (C_l - y)$ を最大にするように $y$ を決めればいい。
 
 $x,y$ はそれぞれ全探索で求める。
+
+** No.74
+
+コインの状態を表が1、裏が0として、これをベクトル $\bf{a}$ で表現する。
+
+このとき、$i$ 番目のコインを選んでそのコインの $\pm d$ 隣を裏返す操作は、$i \pm d$ 番目の要素が1であるベクトルを $\boldsymbol{b_i}$ とすると、$\boldsymbol{a} \oplus \boldsymbol{b_i}$ となる。
+
+排他的論理和の性質から、コインを選ぶ順序は順不同であり、また2回以上同じコインを選ぶ意味はない。
+
+初期状態を $\boldsymbol{c}$ 、最終状態を $\boldsymbol{d}$ とすると、
+
+\[ \boldsymbol{d} = \boldsymbol{c} + (\boldsymbol{b_1} \ \boldsymbol{b_2} \ \cdots \ \boldsymbol{b_N})\boldsymbol{x} \]
+
+となる $\boldsymbol{x}$ が存在すれば、コインをすべて表にすることができる。$\boldsymbol{x}$ が存在するどうかは掃き出し法で求める。
