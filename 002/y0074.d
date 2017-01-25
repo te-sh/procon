@@ -1,6 +1,4 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
-import std.bitmanip;  // BitArray
-import std.container;
 
 version(unittest) {} else
 void main()

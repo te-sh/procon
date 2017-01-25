@@ -8,10 +8,6 @@
 #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 
-# Local variables:
-# after-save-hook: org-html-export-to-html
-# end:
-
 ** No.51
 
 実装あるのみ。
@@ -178,3 +174,23 @@ $x,y$ はそれぞれ全探索で求める。
 \[ \boldsymbol{d} = \boldsymbol{c} + (\boldsymbol{b_1} \ \boldsymbol{b_2} \ \cdots \ \boldsymbol{b_N})\boldsymbol{x} \]
 
 となる $\boldsymbol{x}$ が存在すれば、コインをすべて表にすることができる。$\boldsymbol{x}$ が存在するどうかは掃き出し法で求める。
+
+** No.75
+
+それまでに出た目の合計が $x$ のとき、そこからちょうど $K$ に達するためにふるサイコロの回数の期待値を $E(x)$ とする。このとき、
+
+\[ E(x) = \sum_{d=1}^6 1/6E(x+d) + 1 \]
+
+となる。ただし、
+
+\[ E(K) = 0, \ \forall a \gt K, E(a) = E(0) \]
+
+である。
+
+$\forall a > K, E(a) = m$ と置いて $E(K-1)$ から $E(K-2), E(K-3), \cdots$ を順に計算していき、この結果得られた $E(0)$ と $m$ の差が誤差範囲に収まるよう、二分探索で $m$ を探索する。
+
+** Local variables                                                 :noexport:
+
+# Local variables:
+# after-save-hook: org-html-export-to-html
+# end:

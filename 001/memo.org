@@ -8,10 +8,6 @@
 #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
 #+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
 
-# Local variables:
-# after-save-hook: org-html-export-to-html
-# end:
-
 ** No.1
 
 $i$ 番目の町にコスト $c$ で到達したときの到達時間を $T$ として、$i$ 番目の町から $j$ 番目の町にたどり着くためのコストと時間を $C_{ij}$, $M_{ij}$ とすると、
@@ -285,3 +281,9 @@ $i$ 番目の箱までを使って、$p$ のおもちゃの集合を入れられ
 となる。ただし、$p \cap q = \emptyset$ である。これを DP で計算し、$B(k, P)$ が真となっている最小の $k$ を求める。ただし、$P$ はすべてのおもちゃの集合である。
 
 集合をビットで表現すると $p$ も $q$ も数字で表せる。
+
+** Local variables                                                 :noexport:
+
+# Local variables:
+# after-save-hook: org-html-export-to-html
+# end:
