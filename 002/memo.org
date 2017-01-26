@@ -247,6 +247,14 @@ S &= \sum S_i = 2\frac{\frac{n+1}{2}\frac{n-1}{2}}{2} + \frac{n+1}{2} \\
 
 $D/2$ は 5000 程度なので、全探索で面積が最大となる $L_v, L_h$ を求める。
 
+** No.81
+
+$10^10$ 倍して BigInt で計算する。
+
+** No.82
+
+実装あるのみ。無限リストが使えると楽に書ける。
+
 ** Local variables                                                 :noexport:
 
 # Local variables:
