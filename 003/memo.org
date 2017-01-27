@@ -1,0 +1,34 @@
+#+OPTIONS: num:nil author:nil timestamp:nil
+
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
+
+#+HTML_HEAD: <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+#+HTML_HEAD: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+
+** No.101
+
+$i$ 番目からスタートしたときのゴール番号をシミュレーションで計算する。
+
+$i$ 番目からスタートしたときにあみだくじをいくつつなげれば再び $i$ 番目に戻るかを計算する。
+
+$1 \cdots N$ 番目の必要なあみだくじの数の最小公倍数が答えである。
+
+** No.102
+
+最後の山の最後のカードを取ると、相手のカードを少なくとも半分以上奪えるので、最後の山の最後のカードを取った人の勝ちである。
+
+あとは grundy 数を計算すればいい。
+
+** No.103
+
+素因数の乗数をカードの枚数と考えれば No.102 とほぼ同様の問題となる。
+
+** Local variables                                                 :noexport:
+
+# Local variables:
+# after-save-hook: org-html-export-to-html
+# end:
+
