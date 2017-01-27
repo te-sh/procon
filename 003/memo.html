@@ -258,16 +258,19 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org3ae814b">No.101</a></li>
-<li><a href="#org1c1f7c3">No.102</a></li>
-<li><a href="#orgfff8ebd">No.103</a></li>
+<li><a href="#org1489bc0">No.101</a></li>
+<li><a href="#org886cda4">No.102</a></li>
+<li><a href="#org1a83701">No.103</a></li>
+<li><a href="#org6a2b6c9">No.104</a></li>
+<li><a href="#org9ad68ec">No.105</a></li>
+<li><a href="#orga79beea">No.106</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org3ae814b" class="outline-2">
-<h2 id="org3ae814b">No.101</h2>
-<div class="outline-text-2" id="text-org3ae814b">
+<div id="outline-container-org1489bc0" class="outline-2">
+<h2 id="org1489bc0">No.101</h2>
+<div class="outline-text-2" id="text-org1489bc0">
 <p>
 \(i\) 番目からスタートしたときのゴール番号をシミュレーションで計算する。
 </p>
@@ -282,9 +285,9 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org1c1f7c3" class="outline-2">
-<h2 id="org1c1f7c3">No.102</h2>
-<div class="outline-text-2" id="text-org1c1f7c3">
+<div id="outline-container-org886cda4" class="outline-2">
+<h2 id="org886cda4">No.102</h2>
+<div class="outline-text-2" id="text-org886cda4">
 <p>
 最後の山の最後のカードを取ると、相手のカードを少なくとも半分以上奪えるので、最後の山の最後のカードを取った人の勝ちである。
 </p>
@@ -295,11 +298,50 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-orgfff8ebd" class="outline-2">
-<h2 id="orgfff8ebd">No.103</h2>
-<div class="outline-text-2" id="text-orgfff8ebd">
+<div id="outline-container-org1a83701" class="outline-2">
+<h2 id="org1a83701">No.103</h2>
+<div class="outline-text-2" id="text-org1a83701">
 <p>
 素因数の乗数をカードの枚数と考えれば No.102 とほぼ同様の問題となる。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org6a2b6c9" class="outline-2">
+<h2 id="org6a2b6c9">No.104</h2>
+<div class="outline-text-2" id="text-org6a2b6c9">
+<p>
+\(i\) 号線は左は \(2i\) 号線、右は \(2i+1\) 号線に分岐する。
+</p>
+
+<p>
+あとはシミュレーションを行う。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org9ad68ec" class="outline-2">
+<h2 id="org9ad68ec">No.105</h2>
+<div class="outline-text-2" id="text-org9ad68ec">
+<p>
+角度は \(\tan^{-1}(y/x)\) で求める。(たいていの言語には <code>atan2</code> があると思われる)
+</p>
+
+<p>
+\(0 \cdots 360^\circ\) の範囲に収まるように調整し、ソートした最初の角度が求める角度である。
+</p>
+
+<p>
+ただし、誤差の関係で \(50^\circ\) を超えることがあるので、その場合は \(0^\circ\) が答えとなる。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orga79beea" class="outline-2">
+<h2 id="orga79beea">No.106</h2>
+<div class="outline-text-2" id="text-orga79beea">
+<p>
+エラトステネスの篩を改造して素因数の数を数えられるようにする。
 </p>
 </div>
 </div>
