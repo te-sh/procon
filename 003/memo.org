@@ -234,6 +234,10 @@ $g = \gcd(A)$ とおくと、$A_i = gB_i$ とおける。このとき、$N = \su
 
 実装あるのみ。配列の比較が使えると楽。
 
+** No.139
+
+実装あるのみ。
+
 ** Local variables                                                 :noexport:
 
 # Local variables:
