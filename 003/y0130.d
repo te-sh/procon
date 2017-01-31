@@ -6,23 +6,24 @@ void main()
 {
   auto n = readln.chomp.to!size_t;
   auto ai = readln.split.to!(int[]);
+  ai.sort();
 
-  int calc(size_t i, int[] ai) {
+  int calc(int[] ai) {
     if (ai.empty) return int.max;
-    auto bi = ai.filter!(a => a.bitTest(i)).map!(a => a.bitReset(i)).array;
-    auto ci = ai.filter!(a => !a.bitTest(i)).array;
-    if (i == 0) return bi.empty || ci.empty ? 0 : 1;
-    auto b = calc(i - 1, bi);
-    if (!ci.empty) b = b.bitSet(i);
-    auto c = calc(i - 1, ci);
-    if (!bi.empty) c = c.bitSet(i);
-    return min(b, c);
+    if (ai.back == 0) return 0;
+    auto i = ai.back.bsr, bi = ai.assumeSorted;
+    auto ci = bi.lowerBound(1 << i).array;
+    auto di = bi.upperBound((1 << i) - 1).map!(a => a.bitReset(i)).array;
+    auto c = calc(ci);
+    if (!di.empty) c = c.bitSet(i);
+    auto d = calc(di);
+    if (!ci.empty) d = d.bitSet(i);
+    return min(c, d);
   }
 
-  writeln(calc(ai.fold!max.bsr, ai));
+  writeln(calc(ai));
 }
 
-bool bitTest(T)(T n, size_t i) { return (n & (1 << i)) != 0; }
 T bitSet(T)(T n, size_t i) { return n | (1 << i); }
 T bitReset(T)(T n, size_t i) { return n & ~(1 << i); }
 int bsr(T)(T n) { return core.bitop.bsr(n.to!ulong); }
