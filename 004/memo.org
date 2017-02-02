@@ -1,0 +1,25 @@
+#+OPTIONS: num:nil author:nil timestamp:nil
+
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/htmlize.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="http://www.pirilampo.org/styles/readtheorg/css/readtheorg.css"/>
+
+#+HTML_HEAD: <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+#+HTML_HEAD: <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/lib/js/jquery.stickytableheaders.js"></script>
+#+HTML_HEAD: <script type="text/javascript" src="http://www.pirilampo.org/styles/readtheorg/js/readtheorg.js"></script>
+
+** No.152
+
+$a + b + c \leq \lfloor L/4 \rfloor$ となるピタゴラス数を数え上げる。
+
+ピタゴラス数の数え上げは
+
+$(a, b, c) = (m^2 - n^2, 2mn, m^2 + n^2)$ (ただし、$m \gt n$, $m$ と $n$ は互いに素、$m - n$ は奇数)
+
+を使う。$2m^2 \leq L/4$ であるから、$m$ は最大でも $10^3$ 強である。
+
+** Local variables                                                 :noexport:
+
+# Local variables:
+# after-save-hook: org-html-export-to-html
+# end:
