@@ -258,14 +258,16 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org4a98951">No.152</a></li>
+<li><a href="#orgf95a5bb">No.152</a></li>
+<li><a href="#org8e9f262">No.153</a></li>
+<li><a href="#orge58017b">No.154</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org4a98951" class="outline-2">
-<h2 id="org4a98951">No.152</h2>
-<div class="outline-text-2" id="text-org4a98951">
+<div id="outline-container-orgf95a5bb" class="outline-2">
+<h2 id="orgf95a5bb">No.152</h2>
+<div class="outline-text-2" id="text-orgf95a5bb">
 <p>
 \(a + b + c \leq \lfloor L/4 \rfloor\) となるピタゴラス数を数え上げる。
 </p>
@@ -280,6 +282,38 @@ for the JavaScript code in this tag.
 
 <p>
 を使う。\(2m^2 \leq L/4\) であるから、\(m\) は最大でも \(10^3\) 強である。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8e9f262" class="outline-2">
+<h2 id="org8e9f262">No.153</h2>
+<div class="outline-text-2" id="text-org8e9f262">
+<p>
+grundy 数を計算する。
+</p>
+
+<p>
+\(g(1) = 0\) であり、山が \(x_1, x_2\) 個の山に分裂したときの grundy 数は \(g(x_1) \oplus g(x_2)\) となる。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orge58017b" class="outline-2">
+<h2 id="orge58017b">No.154</h2>
+<div class="outline-text-2" id="text-orge58017b">
+<p>
+後ろの文字から見ていき、Rが通過した系統数 \(R\) 、Gが通過した系統数 \(G\) 、Wが通過した系統数 \(W\) をメモしておく。文字によってメモを以下のように更新する。
+</p>
+
+<ul class="org-ul">
+<li>Rのときは \(R\) に \(1\) を加える。</li>
+<li>Gのときは \(G \geq R\) ならば impossible。そうでなければ \(G\) に \(1\) を加える。</li>
+<li>Wのときは \(G = 0\) ならば impossible。そうでなければ \(W\) に \(1\) を加える。ただし加えた結果 \(W \gt G\) となる場合は加えない。</li>
+</ul>
+
+<p>
+最後まで見終わったときに \(R = G = W\) ならば possible、そうでなければ impossible である。
 </p>
 </div>
 </div>
