@@ -258,16 +258,18 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgf95a5bb">No.152</a></li>
-<li><a href="#org8e9f262">No.153</a></li>
-<li><a href="#orge58017b">No.154</a></li>
+<li><a href="#orge7e541e">No.152</a></li>
+<li><a href="#org68b284f">No.153</a></li>
+<li><a href="#org530b53c">No.154</a></li>
+<li><a href="#orgc16b6a3">No.156</a></li>
+<li><a href="#org69f4d53">No.157</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgf95a5bb" class="outline-2">
-<h2 id="orgf95a5bb">No.152</h2>
-<div class="outline-text-2" id="text-orgf95a5bb">
+<div id="outline-container-orge7e541e" class="outline-2">
+<h2 id="orge7e541e">No.152</h2>
+<div class="outline-text-2" id="text-orge7e541e">
 <p>
 \(a + b + c \leq \lfloor L/4 \rfloor\) となるピタゴラス数を数え上げる。
 </p>
@@ -286,9 +288,9 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org8e9f262" class="outline-2">
-<h2 id="org8e9f262">No.153</h2>
-<div class="outline-text-2" id="text-org8e9f262">
+<div id="outline-container-org68b284f" class="outline-2">
+<h2 id="org68b284f">No.153</h2>
+<div class="outline-text-2" id="text-org68b284f">
 <p>
 grundy 数を計算する。
 </p>
@@ -299,9 +301,9 @@ grundy 数を計算する。
 </div>
 </div>
 
-<div id="outline-container-orge58017b" class="outline-2">
-<h2 id="orge58017b">No.154</h2>
-<div class="outline-text-2" id="text-orge58017b">
+<div id="outline-container-org530b53c" class="outline-2">
+<h2 id="org530b53c">No.154</h2>
+<div class="outline-text-2" id="text-org530b53c">
 <p>
 後ろの文字から見ていき、Rが通過した系統数 \(R\) 、Gが通過した系統数 \(G\) 、Wが通過した系統数 \(W\) をメモしておく。文字によってメモを以下のように更新する。
 </p>
@@ -314,6 +316,32 @@ grundy 数を計算する。
 
 <p>
 最後まで見終わったときに \(R = G = W\) ならば possible、そうでなければ impossible である。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc16b6a3" class="outline-2">
+<h2 id="orgc16b6a3">No.156</h2>
+<div class="outline-text-2" id="text-orgc16b6a3">
+<p>
+実装あるのみ。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org69f4d53" class="outline-2">
+<h2 id="org69f4d53">No.157</h2>
+<div class="outline-text-2" id="text-org69f4d53">
+<p>
+空洞をひとつ選び、そこから空洞を深さ(幅)優先探索で探索してかたまり1を確定させる。
+</p>
+
+<p>
+残りの中から空洞をひとつ選び、そこから深さ(幅)優先探索でかたまり2を確定させていく。探索の途中で壁があった場合は、そこから幅優先探索でかたまり1にたどり着くまでの最短距離を求める。
+</p>
+
+<p>
+すべての最短距離の最小値が答えである。
 </p>
 </div>
 </div>
