@@ -258,18 +258,20 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orge7e541e">No.152</a></li>
-<li><a href="#org68b284f">No.153</a></li>
-<li><a href="#org530b53c">No.154</a></li>
-<li><a href="#orgc16b6a3">No.156</a></li>
-<li><a href="#org69f4d53">No.157</a></li>
+<li><a href="#org51c525d">No.152</a></li>
+<li><a href="#orgc48ad34">No.153</a></li>
+<li><a href="#orgf382724">No.154</a></li>
+<li><a href="#org90cea3f">No.156</a></li>
+<li><a href="#orgd2af1ca">No.157</a></li>
+<li><a href="#orgf8e606a">No.158</a></li>
+<li><a href="#org99f9956">No.159</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orge7e541e" class="outline-2">
-<h2 id="orge7e541e">No.152</h2>
-<div class="outline-text-2" id="text-orge7e541e">
+<div id="outline-container-org51c525d" class="outline-2">
+<h2 id="org51c525d">No.152</h2>
+<div class="outline-text-2" id="text-org51c525d">
 <p>
 \(a + b + c \leq \lfloor L/4 \rfloor\) となるピタゴラス数を数え上げる。
 </p>
@@ -288,9 +290,9 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org68b284f" class="outline-2">
-<h2 id="org68b284f">No.153</h2>
-<div class="outline-text-2" id="text-org68b284f">
+<div id="outline-container-orgc48ad34" class="outline-2">
+<h2 id="orgc48ad34">No.153</h2>
+<div class="outline-text-2" id="text-orgc48ad34">
 <p>
 grundy 数を計算する。
 </p>
@@ -301,9 +303,9 @@ grundy 数を計算する。
 </div>
 </div>
 
-<div id="outline-container-org530b53c" class="outline-2">
-<h2 id="org530b53c">No.154</h2>
-<div class="outline-text-2" id="text-org530b53c">
+<div id="outline-container-orgf382724" class="outline-2">
+<h2 id="orgf382724">No.154</h2>
+<div class="outline-text-2" id="text-orgf382724">
 <p>
 後ろの文字から見ていき、Rが通過した系統数 \(R\) 、Gが通過した系統数 \(G\) 、Wが通過した系統数 \(W\) をメモしておく。文字によってメモを以下のように更新する。
 </p>
@@ -320,18 +322,18 @@ grundy 数を計算する。
 </div>
 </div>
 
-<div id="outline-container-orgc16b6a3" class="outline-2">
-<h2 id="orgc16b6a3">No.156</h2>
-<div class="outline-text-2" id="text-orgc16b6a3">
+<div id="outline-container-org90cea3f" class="outline-2">
+<h2 id="org90cea3f">No.156</h2>
+<div class="outline-text-2" id="text-org90cea3f">
 <p>
 実装あるのみ。
 </p>
 </div>
 </div>
 
-<div id="outline-container-org69f4d53" class="outline-2">
-<h2 id="org69f4d53">No.157</h2>
-<div class="outline-text-2" id="text-org69f4d53">
+<div id="outline-container-orgd2af1ca" class="outline-2">
+<h2 id="orgd2af1ca">No.157</h2>
+<div class="outline-text-2" id="text-orgd2af1ca">
 <p>
 空洞をひとつ選び、そこから空洞を深さ(幅)優先探索で探索してかたまり1を確定させる。
 </p>
@@ -342,6 +344,37 @@ grundy 数を計算する。
 
 <p>
 すべての最短距離の最小値が答えである。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf8e606a" class="outline-2">
+<h2 id="orgf8e606a">No.158</h2>
+<div class="outline-text-2" id="text-orgf8e606a">
+<p>
+手持ちが \((A_{1000}, A_{100}, A_1)\) のときに行ける最大のお使い回数を返す関数を作り、メモ化再帰する。
+</p>
+
+<p>
+\(D\) 円を払うための1000円、100円、1円の使い方は、大きい方のお金から使うようにすればいい。合計金額が足りているがちょうど払えない場合は大きい方のお金を持っているときだからである。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org99f9956" class="outline-2">
+<h2 id="org99f9956">No.159</h2>
+<div class="outline-text-2" id="text-org99f9956">
+<p>
+以下の計算式になる。
+</p>
+
+\begin{align*}
+P_1 &= (1-p)q \\
+P_2 &= p(1-q)q
+\end{align*}
+
+<p>
+\(q \neq 0\) であるので、\(q\) で割っておいていい。
 </p>
 </div>
 </div>
