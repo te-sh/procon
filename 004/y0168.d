@@ -9,25 +9,36 @@ void main()
   auto n = readln.chomp.to!size_t;
   auto pi = n.iota.map!(_ => readln.split.to!(int[])).map!(rd => point(rd[0], rd[1])).array;
 
-  auto dij = new long[][](n, n);
-  auto maxD = long(0);
-  foreach (i; n.iota)
-    foreach (j; n.iota) {
-      dij[i][j] = (pi[i] - pi[j]).hypot2;
-      maxD = max(maxD, dij[i][j]);
-    }
+  auto pli = new pointLen[](n * (n - 1) / 2);
+  auto k = size_t(0);
+  foreach (i; 0..n-1)
+    foreach (j; i+1..n)
+      pli[k++] = pointLen(i, j, (pi[i] - pi[j]).hypot2);
 
-  auto calc(long _, long a) {
+  pli.sort!"a.len2 < b.len2";
+
+  auto calc() {
     auto uf = new UnionFind!size_t(n);
-    foreach (i; n.iota)
-      foreach (j; n.iota)
-        if (dij[i][j] <= a * a)
-          uf.unite(i, j);
-    return uf.find(0) == uf.find(n - 1);
+    foreach (pl; pli) {
+      uf.unite(pl.i, pl.j);
+      if (uf.find(0) == uf.find(n - 1)) return pl.len2;
+    }
+    return 0L;
   }
 
-  auto r = iota(10L, maxD.to!real.sqrt.to!long + 20, 10L).assumeSorted!calc.upperBound(0);
+  auto sq(long len2, long a) {
+    return a * a >= len2;
+  }
+
+  auto len2 = calc;
+  auto r = iota(10L, pli.back.len2.to!real.sqrt.to!long + 20, 10L).assumeSorted!sq.upperBound(len2);
+
   writeln(r.front);
+}
+
+struct pointLen {
+  size_t i, j;
+  long len2;
 }
 
 struct Point(T) {
