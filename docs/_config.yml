@@ -1,0 +1,15 @@
+title: yukicoder を解いてみたメモ
+baseurl: /yukicoder
+github_username:  te-sh
+
+collections:
+  memos:
+    output: true
+
+markdown: kramdown
+theme: minima
+gems:
+  - jekyll-feed
+exclude:
+  - Gemfile
+  - Gemfile.lock
