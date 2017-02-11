@@ -1,0 +1,24 @@
+---
+layout: default
+---
+<p><a href="http://yukicoder.me">yukicoder</a> の問題を解いたときのメモです。</p>
+
+<p>分からなかった問題は解説を読みながら書いてますので、その解説を丸パクリしてるようなメモもあると思います。問題があるようであれば <a href="https://github.com/te-sh/yukicoder/issues">issue</a> に登録してください。</p>
+
+<table class="table table-bordered">
+  {% for i in (1..5) %}
+  <tr>
+    {% for j in (1..10) %}
+    {% assign number = i | minus: 1 | times: 10 | plus: j %}
+    {% assign doc = site.collections[0].docs | where: "number": number %}
+    <td class="text-center">
+      {% if doc[0] %}
+      <a href="{{ site.baseurl }}{{ doc[0].url }}">No.{{ number }}</a>
+      {% else %}
+      <span class="text-muted">No.{{ number }}</span>
+      {% endif %}
+    </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
