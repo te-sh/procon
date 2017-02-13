@@ -4,10 +4,14 @@ layout: default
 <script type="text/javascript"
         src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
-<article>
-  <h1 id="no{{ page.number }}" style="display: inline;">No.{{ page.number }}</h1>
-  <a href="http://yukicoder.me/problems/no/{{ page.number }}">問題</a>
-  <div style="margin-top: 1ex;">
+<article class="memo">
+  <h1 id="no{{ page.number }}" class="title">No.{{ page.number }}</h1>
+  <ul class="actions list-inline">
+    <li><a href="http://yukicoder.me/problems/no/{{ page.number }}">問題</a></li>
+    <li><a href="http://github.com/te-sh/yukicoder/blob/master/{{ page.url | replace: '.html', '.d' | replace: '/memos/', '' }}">コード</a></li>
+  </ul>
+
+  <div class="content">
     {{ content }}
   </div>
 </article>

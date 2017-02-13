@@ -1,0 +1,18 @@
+---
+---
+@import "{{ site.theme }}";
+
+.memo {
+    .title {
+        display: inline;
+    }
+
+    .actions {
+        display: inline;
+        margin-left: 1em;
+    }
+
+    .content {
+        margin-top: 15px;
+    }
+}
