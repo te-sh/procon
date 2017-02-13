@@ -12,7 +12,7 @@ layout: default
     {% for j in (1..10) %}
     {% assign number = i | minus: 1 | times: 10 | plus: j %}
     {% assign doc = site.collections[0].docs | where: "number": number %}
-    <td class="text-center">
+    <td class="text-center col-md-1">
       {% if doc[0] %}
       <a href="{{ site.baseurl }}{{ doc[0].url }}">No.{{ number }}</a>
       {% else %}
@@ -31,7 +31,7 @@ layout: default
     {% for j in (1..10) %}
     {% assign number = i | minus: 1 | times: 10 | plus: j | plus: 50 %}
     {% assign doc = site.collections[0].docs | where: "number": number %}
-    <td class="text-center">
+    <td class="text-center col-md-1">
       {% if doc[0] %}
       <a href="{{ site.baseurl }}{{ doc[0].url }}">No.{{ number }}</a>
       {% else %}
