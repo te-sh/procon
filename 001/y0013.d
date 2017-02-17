@@ -5,28 +5,23 @@ version(unittest) {} else
 void main()
 {
   auto rd = readln.split.to!(size_t[]), w = rd[0], h = rd[1];
-  auto mij = h.iota.map!(_ => readln.split.to!(int[])).array;
+  auto mij = Matrix!int(h.iota.map!(_ => readln.split.to!(int[])).array);
 
-  auto vij = new bool[][](h, w);
-
-  bool valid(point p)
-  {
-    return p.x >= 0 && p.y >= 0 && p.x < w && p.y < h;
-  }
+  auto vij = Matrix!bool(h, w);
 
   bool wfs(point s)
   {
     auto q = SList!pointsCP(pointsCP(s, point(-1, -1)));
-    vij[s.y][s.x] = true;
+    vij[s] = true;
 
     while (!q.empty) {
       auto cp = q.front; q.removeFront;
       auto curr = cp.curr, prev = cp.prev;
       foreach (sp; sibPoints) {
         auto np = curr + sp;
-        if (valid(np) && np != prev && mij[curr.y][curr.x] == mij[np.y][np.x]) {
-          if (vij[np.y][np.x]) return true;
-          vij[np.y][np.x] = true;
+        if (mij.validIndex(np) && np != prev && mij[curr] == mij[np]) {
+          if (vij[np]) return true;
+          vij[np] = true;
           q.insertFront(pointsCP(np, curr));
         }
       }
@@ -36,10 +31,9 @@ void main()
 
   bool calc()
   {
-    foreach (i; h.iota)
-      foreach (j; w.iota)
-        if (!vij[i][j] && wfs(point(j.to!int, i.to!int)))
-          return true;
+    foreach (p; vij.points!int)
+      if (!vij[p] && wfs(p))
+        return true;
 
     return false;
   }
@@ -64,3 +58,25 @@ struct Point(T) {
 alias Point!int point;
 
 const auto sibPoints = [point(-1, 0), point(0, -1), point(1, 0), point(0, 1)];
+
+struct Matrix(T)
+{
+  import std.algorithm, std.conv, std.range, std.traits, std.typecons;
+
+  T[][] m;
+  size_t rows, cols;
+
+  mixin Proxy!m;
+
+  this(size_t r, size_t c) { rows = r; cols = c; m = new T[][](rows, cols); }
+  this(T[][] s) { rows = s.length; cols = s[0].length; m = s; }
+
+  auto opIndex(U)(U p) { static if (is(U == Point!V, V)) return m[p.y][p.x]; else return m[p]; }
+  auto opIndex(size_t y, size_t x) { return m[y][x]; }
+  static if (isAssignable!T) {
+    auto opIndexAssign(U)(T v, Point!U p) { return m[p.y][p.x] = v; }
+    auto opIndexAssign(T v, size_t y, size_t x) { return m[y][x] = v; }
+  }
+  auto validIndex(U)(Point!U p) { return p.x >= 0 && p.x < cols && p.y >= 0 && p.y < rows; }
+  auto points(U)() { return rows.to!U.iota.map!(y => cols.to!U.iota.map!(x => Point!U(x, y))).joiner; }
+}

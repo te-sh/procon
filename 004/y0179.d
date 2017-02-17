@@ -6,12 +6,11 @@ version(unittest) {} else
 void main()
 {
   auto rd = readln.split.to!(int[]), h = rd[0], w = rd[1];
-  auto sij = h.iota.map!(_ => readln.chomp).array;
+  auto sij = Matrix!(immutable(char))(h.iota.map!(_ => readln.chomp).array);
 
   auto s = {
-    foreach (y; 0..h)
-      foreach (x; 0..w)
-        if (sij[y][x] == '#') return point(x, y);
+    foreach (p; sij.points!int)
+      if (sij[p] == '#') return p;
     return point(-1, -1);
   }();
 
@@ -20,39 +19,59 @@ void main()
     return;
   }
 
-  auto canPaint(int x, int y) {
-    auto d = point(x, y) - s;
-    auto tij = new bool[][](h, w);
-    tij[s.y][s.x] = tij[y][x] = true;
-    foreach (iy; 0..h)
-      foreach (ix; 0..w)
-        if (sij[iy][ix] == '#' && !tij[iy][ix]) {
-          auto ip = d + point(ix, iy);
-          if (ip.x < 0 || ip.x >= w || ip.y >= h || sij[ip.y][ip.x] != '#' || tij[ip.y][ip.x])
+  auto canPaint(point p) {
+    auto d = p - s;
+    auto tij = Matrix!bool(h, w);
+    tij[s] = tij[p] = true;
+    foreach (ip; sij.points!int)
+      if (sij[ip] == '#' && !tij[ip]) {
+        auto np = d + ip;
+        if (!sij.validIndex(np) || sij[np] != '#' || tij[np])
             return false;
-          tij[iy][ix] = tij[ip.y][ip.x] = true;
+          tij[ip] = tij[np] = true;
         }
     return true;
   }
 
   auto r = {
     foreach (y; s.y..h)
-      foreach (x; 0..w)
-        if (s != point(x, y) && sij[y][x] == '#' && canPaint(x, y))
+      foreach (x; 0..w) {
+        auto p = point(x, y);
+        if (s != p && sij[p] == '#' && canPaint(p))
           return true;
+      }
     return false;
   }();
 
   writeln(r ? "YES" : "NO");
 }
 
-struct Point(T) {
+struct Point(T)
+{
   T x, y;
 
   auto opBinary(string op: "+")(Point!T rhs) { return Point!T(x + rhs.x, y + rhs.y); }
   auto opBinary(string op: "-")(Point!T rhs) { return Point!T(x - rhs.x, y - rhs.y); }
-  auto opBinary(string op: "*")(Point!T rhs) { return x * rhs.x + y * rhs.y; }
-  auto opBinary(string op: "*")(T a) { return Point!T(x * a, y * a); }
+}
 
-  T hypot2() { return x ^^ 2 + y ^^ 2; }
+struct Matrix(T)
+{
+  import std.algorithm, std.conv, std.range, std.traits, std.typecons;
+
+  T[][] m;
+  size_t rows, cols;
+
+  mixin Proxy!m;
+
+  this(size_t r, size_t c) { rows = r; cols = c; m = new T[][](rows, cols); }
+  this(T[][] s) { rows = s.length; cols = s[0].length; m = s; }
+
+  auto opIndex(U)(U p) { static if (is(U == Point!V, V)) return m[p.y][p.x]; else return m[p]; }
+  auto opIndex(size_t y, size_t x) { return m[y][x]; }
+  static if (isAssignable!T) {
+    auto opIndexAssign(U)(T v, Point!U p) { return m[p.y][p.x] = v; }
+    auto opIndexAssign(T v, size_t y, size_t x) { return m[y][x] = v; }
+  }
+  auto validIndex(U)(Point!U p) { return p.x >= 0 && p.x < cols && p.y >= 0 && p.y < rows; }
+  auto points(U)() { return rows.to!U.iota.map!(y => cols.to!U.iota.map!(x => Point!U(x, y))).joiner; }
 }

@@ -8,17 +8,14 @@ void main()
   auto rd = readln.split;
   auto n = rd[0].to!size_t, v = rd[1].to!long;
   auto o = point(rd[2].to!int - 1, rd[3].to!int - 1);
-  auto lij = n.iota.map!(_ => readln.split.to!(int[])).array;
+  auto lij = Matrix!int(n.iota.map!(_ => readln.split.to!(int[])).array);
 
   auto gij = new Edge!long[][](n ^^ 2);
-  foreach (j; n.iota)
-    foreach (i; n.iota) {
-      auto p = point(i.to!int, j.to!int);
-      foreach (sib; sibPoints) {
-        auto np = p + sib;
-        if (np.x >= 0 && np.y >= 0 && np.x < n && np.y < n)
-          gij[i + j * n] ~= Edge!long(np.x + np.y * n, lij[np.y][np.x]);
-      }
+  foreach (p; lij.points!int)
+    foreach (sib; sibPoints) {
+      auto np = p + sib;
+      if (lij.validIndex(np))
+        gij[p.x + p.y * n] ~= Edge!long(np.x + np.y * n, lij[np]);
     }
 
   writeln(calc(gij, o, v) ? "YES" : "NO");
@@ -53,6 +50,28 @@ struct Point(T) {
 alias Point!int point;
 
 const auto sibPoints = [point(-1, 0), point(0, -1), point(1, 0), point(0, 1)];
+
+struct Matrix(T)
+{
+  import std.algorithm, std.conv, std.range, std.traits, std.typecons;
+
+  T[][] m;
+  size_t rows, cols;
+
+  mixin Proxy!m;
+
+  this(size_t r, size_t c) { rows = r; cols = c; m = new T[][](rows, cols); }
+  this(T[][] s) { rows = s.length; cols = s[0].length; m = s; }
+
+  auto opIndex(U)(U p) { static if (is(U == Point!V, V)) return m[p.y][p.x]; else return m[p]; }
+  auto opIndex(size_t y, size_t x) { return m[y][x]; }
+  static if (isAssignable!T) {
+    auto opIndexAssign(U)(T v, Point!U p) { return m[p.y][p.x] = v; }
+    auto opIndexAssign(T v, size_t y, size_t x) { return m[y][x] = v; }
+  }
+  auto validIndex(U)(Point!U p) { return p.x >= 0 && p.x < cols && p.y >= 0 && p.y < rows; }
+  auto points(U)() { return rows.to!U.iota.map!(y => cols.to!U.iota.map!(x => Point!U(x, y))).joiner; }
+}
 
 struct Edge(T) {
   size_t v;
