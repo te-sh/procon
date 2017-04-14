@@ -12,7 +12,7 @@ void main()
   bi.sort!"a > b";
 
   auto ci = new int[](1 << n);
-  foreach (p; (1 << n).iota)
+  foreach (p; 0..(1 << n))
     ci[p] = ai.indexed(p.bitsSet).sum;
 
   auto calc()
@@ -20,10 +20,10 @@ void main()
     auto dp = new bool[][](m + 1, 1 << n);
     dp[0][0] = true;
 
-    foreach (k; m.iota) {
-      foreach (p1; (1 << n).iota)
+    foreach (k; 0..m) {
+      foreach (p1; 0..(1 << n))
         if (dp[k][p1])
-          foreach (p2; (1 << n).iota)
+          foreach (p2; 0..(1 << n))
             if ((p1 & p2) == 0 && ci[p2] <= bi[k])
               dp[k + 1][p1 | p2] = true;
 

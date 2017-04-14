@@ -9,9 +9,9 @@ void main()
   auto n = s.length;
   auto t = new char[](n);
   
-  foreach (j; (1 << n).iota) {
+  foreach (j; 0..(1 << n)) {
     auto u = s.dup;
-    foreach (i; n.iota) {
+    foreach (i; 0..n) {
       if (bitTest(j, i)) {
         t[i] = u[0];
         u = u[1..$];
@@ -26,4 +26,4 @@ void main()
   writeln(buf.length);
 }
 
-bool bitTest(T)(T n, size_t i) { return (n & (1.to!T << i)) != 0; }
+bool bitTest(T)(T n, size_t i) { return (n & (T(1) << i)) != 0; }

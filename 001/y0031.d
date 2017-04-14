@@ -23,11 +23,11 @@ void main()
   dp[] = long.max;
   dp[0] = 0;
 
-  foreach (i; n.iota) {
+  foreach (i; 0..n) {
     auto dp2 = dp.dup;
     foreach (dpi, dpv; dp) {
       if (dpv != long.max) {
-        foreach (j; (k + 1).iota) {
+        foreach (j; 0..(k + 1)) {
           auto idx = dpi + (i + 1) * j;
           if (idx < dp.length)
             dp2[idx] = min(dp2[idx], dpv + ci[i] * j);

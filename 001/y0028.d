@@ -7,7 +7,7 @@ version(unittest) {} else
 void main()
 {
   auto q = readln.chomp.to!size_t;
-  foreach (_; q.iota) {
+  foreach (_; 0..q) {
     auto rd = readln.split.to!(int[]);
     auto seed = rd[0], n = rd[1], k = rd[2], b = rd[3];
 
@@ -15,7 +15,7 @@ void main()
 
     auto xi = new mint[](n + 1);
     xi[0] = seed;
-    foreach (i; n.iota)
+    foreach (i; 0..n)
       xi[i + 1] = xi[i] * (xi[i] + 12345) + 1;
 
     auto r = int.max;

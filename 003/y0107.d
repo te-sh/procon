@@ -14,9 +14,9 @@ void main()
   auto dp = new int[](1 << n);
   dp[0] = 100;
 
-  foreach (i; iota(1, 1 << n)) {
+  foreach (i; 1..(1 << n)) {
     int maxHp;
-    foreach (j; n.iota)
+    foreach (j; 0..n)
       if (i.bitTest(j)) {
         int hp = dp[i.bitReset(j)], nhp = 0;
         if (hp > 0) {
@@ -34,6 +34,6 @@ void main()
   writeln(dp.back);
 }
 
-bool bitTest(T)(T n, size_t i) { return (n & (1.to!T << i)) != 0; }
-T bitReset(T)(T n, size_t i) { return n & ~(1.to!T << i); }
+bool bitTest(T)(T n, size_t i) { return (n & (T(1) << i)) != 0; }
+T bitReset(T)(T n, size_t i) { return n & ~(T(1) << i); }
 

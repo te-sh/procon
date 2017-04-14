@@ -9,7 +9,7 @@ void main()
   auto dp = new bool[][](n + 1, 1 << 15);
   dp[0][1] = true;
   foreach (i, a; ai)
-    foreach (j; (1 << 15).iota)
+    foreach (j; 0..(1 << 15))
       if (dp[i][j]) {
         dp[i + 1][j] = true;
         dp[i + 1][j ^ a] = true;

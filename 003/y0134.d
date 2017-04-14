@@ -8,24 +8,24 @@ void main()
   auto rd1 = readln.split.to!(int[]), s = point(rd1[0], rd1[1]);
   auto n = readln.chomp.to!size_t;
   auto pi = new point[](n), wi = new real[](n);
-  foreach (i; n.iota) {
+  foreach (i; 0..n) {
     auto rd2 = readln.split;
     pi[i] = point(rd2[0].to!int, rd2[1].to!int);
     wi[i] = rd2[2].to!real;
   }
 
   auto vi = new real[](1 << n);
-  foreach (i; (1 << n).iota)
+  foreach (i; 0..(1 << n))
     vi[i] = wi.indexed(i.bitsSet).sum;
 
   auto dp = new real[][](1 << n, n);
-  foreach (j; n.iota) {
+  foreach (j; 0..n) {
     dp[0][j] = real(100) / 120 * manDis(pi[j], s) + wi[j];
   }
 
-  foreach (i; ((1 << n) - 1).iota) {
-    foreach (j; n.iota) {
-      foreach (k; n.iota) {
+  foreach (i; 0..((1 << n) - 1)) {
+    foreach (j; 0..n) {
+      foreach (k; 0..n) {
         if (j == k || i.bitTest(j)) continue;
         auto ni = i.bitSet(j);
         auto nv = dp[i][j] + (vi[ni] + 100) / 120 * manDis(pi[k], pi[j]) + wi[k];
@@ -54,9 +54,9 @@ auto manDis(point p1, point p2)
 }
 
 template BitOp(T) {
-  bool bitTest(T n, size_t i) { return (n & (1.to!T << i)) != 0; }
-  T bitSet(T n, size_t i) { return n | (1.to!T << i); }
-  T bitReset(T n, size_t i) { return n & ~(1.to!T << i); }
+  bool bitTest(T n, size_t i) { return (n & (T(1) << i)) != 0; }
+  T bitSet(T n, size_t i) { return n | (T(1) << i); }
+  T bitReset(T n, size_t i) { return n & ~(T(1) << i); }
 }
 
 mixin BitOp!int;

@@ -6,7 +6,7 @@ void main()
 {
   auto rd1 = readln.split.to!(size_t[]), n = rd1[0], m = rd1[1], s = rd1[2], g = rd1[3];
   auto aij = new int[][](n, n);
-  foreach (_; m.iota) {
+  foreach (_; 0..m) {
     auto rd2 = readln.split, a = rd2[0].to!size_t, b = rd2[1].to!size_t, c = rd2[2].to!int;
     aij[a][b] = aij[b][a] = c;
   }
@@ -14,7 +14,7 @@ void main()
   auto di = dijkstra(aij, g);
 
   size_t[] calc(size_t[] route, int rest) {
-    foreach (np; n.iota) {
+    foreach (np; 0..n) {
       if (aij[route.back][np] == 0) continue;
       auto nrest = rest - aij[route.back][np];
       if (np == g && nrest == 0) return route ~ np;
@@ -43,7 +43,7 @@ T[] dijkstra(T)(T[][] aij, size_t s, T inf = 0) {
   void addNext(Edge!T e) {
     auto v = e.v, w = e.w;
     di[v] = w;
-    foreach (i; n.iota)
+    foreach (i; 0..n)
       if (aij[v][i] != inf && di[i] == inf)
         qi.insert(Edge!T(i, w + aij[v][i]));
   }

@@ -9,7 +9,7 @@ void main()
   auto bi = k.iota.map!(_ => readln.split.to!(size_t[]).front - 1).array;
 
   auto ci = new size_t[](n);
-  foreach (i; n.iota) {
+  foreach (i; 0..n) {
     auto j = i;
     foreach (b; bi) {
       if (j == b) ++j;
@@ -19,7 +19,7 @@ void main()
   }
 
   auto di = new int[](n);
-  foreach (i; n.iota) {
+  foreach (i; 0..n) {
     auto j = i, d = 0;
     do {
       j = ci[j];

@@ -7,7 +7,7 @@ void main()
 {
   auto q = readln.chomp.to!size_t;
 
-  foreach (_1; q.iota) {
+  foreach (_1; 0..q) {
     auto rd = readln.split.to!(int[]);
     auto w = rd[0], h = rd[1], d = rd[2], mx = rd[3], my = rd[4];
     auto hx = rd[5], hy = rd[6], vx = rd[7], vy = rd[8];
@@ -17,7 +17,7 @@ void main()
     auto fij = new bool[][](h2, w2);
 
     auto bx = hx, by = hy;
-    foreach (_2; (d * g).iota) {
+    foreach (_2; 0..(d * g)) {
       bx = ((bx + ux) % w2 + w2) % w2;
       by = ((by + uy) % h2 + h2) % h2;
       if (fij[by][bx]) break;

@@ -10,10 +10,10 @@ void main()
   auto bi = bitPos(s);
 
   auto maxL = 0.to!size_t;
-  foreach (i; (1 << 20).iota) {
+  foreach (i; 0..(1 << 20)) {
     if (s.length - i.popcnt <= maxL) continue;
     string t;
-    foreach (j; 30.iota)
+    foreach (j; 0..30)
       if (!bitTest(i, bi[j])) t ~= s[j];
     if (valid(t, kr, kb))
       maxL = max(maxL, t.length);
@@ -22,7 +22,7 @@ void main()
   writeln(maxL);
 }
 
-bool bitTest(T)(T n, size_t i) { return (n & (1.to!T << i)) != 0; }
+bool bitTest(T)(T n, size_t i) { return (n & (T(1) << i)) != 0; }
 
 auto bitPos(string s)
 {
