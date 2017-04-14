@@ -13,8 +13,8 @@ void main()
   auto maxM = (l / 2).to!real.sqrt.to!long;
 
   auto r = 0;
-  foreach (long m; iota(1, l.to!real.sqrt.to!long + 1))
-    foreach (long n; iota(m % 2 + 1, m, 2)) {
+  foreach (long m; 1..(l.to!real.sqrt.to!long + 1))
+    for (long n = m % 2 + 1; n < m; n += 2) {
       if (2L * m * (m + n) > l) break;
       if (gcd(m, n) == 1) ++r;
     }

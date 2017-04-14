@@ -1,4 +1,5 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
+import core.bitop;
 
 version(unittest) {} else
 void main()
@@ -8,7 +9,7 @@ void main()
 
   auto ai = gi.enumerate.map!(g => g[1] == '-' ? g[0] : size_t.max).filter!(i => i < size_t.max).array;
   auto r = n;
-  foreach (i; (1 << ai.length).iota) {
+  foreach (i; 0..(1 << ai.length)) {
     auto bi = gi.dup;
     foreach (j, a; ai)
       bi[a] = bitTest(i, j) ? 'o' : 'x';
@@ -20,7 +21,13 @@ void main()
 
 auto calc(size_t n, dchar[] bi)
 {
-  auto wi = n.iota.map!(i => n.iota.map!(j => result(bi, i, j)).count(true)).array;
+  auto wi = new int[](n);
+  foreach (i; 0..n) {
+    auto w = 0;
+    foreach (j; 0..n)
+      if (result(bi, i, j)) w = w.bitSet(j);
+    wi[i] = w.popcnt;
+  }
   auto w0 = wi[0];
   auto ri = wi.sort!"a > b".uniq;
   return ri.countUntil(w0) + 1;
@@ -36,4 +43,6 @@ bool result(dchar[] bi, size_t p1, size_t p2)
     return bi[(p2 - 1) * p2 / 2 + p1] == 'x';
 }
 
-bool bitTest(T)(T n, size_t i) { return (n & (1.to!T << i)) != 0; }
+pure bool bitTest(T)(T n, size_t i) { return (n & (T(1) << i)) != 0; }
+pure T bitSet(T)(T n, size_t i) { return n | (T(1) << i); }
+pure int popcnt(T)(T n) { return core.bitop.popcnt(ulong(n)); }
