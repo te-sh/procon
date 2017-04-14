@@ -1,5 +1,4 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
-import std.math;      // math functions
 
 version(unittest) {} else
 void main()
@@ -50,20 +49,20 @@ int toBitNum(int a)
   return r;
 }
 
-int[] primes(int n)
+pure int[] primes(int n)
 {
-  auto sieve = new bool[]((n + 1) / 2);
-  sieve[] = true;
+  import std.math, std.bitmanip;
 
-  foreach (p; iota(1, (n.to!real.sqrt.to!int - 1) / 2 + 1))
+  auto sieve = BitArray();
+  sieve.length((n + 1) / 2);
+  sieve = ~sieve;
+
+  foreach (p; 1..((n.to!real.sqrt.to!int - 1) / 2 + 1))
     if (sieve[p])
-      foreach (q; iota(p * 3 + 1, (n + 1) / 2, p * 2 + 1))
+      for (auto q = p * 3 + 1; q < (n + 1) / 2; q += p * 2 + 1)
         sieve[q] = false;
 
-  auto r = sieve.enumerate
-    .filter!("a[1]")
-    .map!("a[0]").map!("a * 2 + 1")
-    .map!(to!int).array;
+  auto r = sieve.bitsSet.map!(to!int).map!("a * 2 + 1").array;
   r[0] = 2;
 
   return r;
