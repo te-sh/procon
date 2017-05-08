@@ -13,26 +13,26 @@ void main()
   auto di = ai.map!(a => ci[a]).array;
   auto maxD = di.maxElement;
 
-  auto bt1 = BiTree!long(maxD);
-  bt1.add(di[0], 1);
+  auto bt1 = BiTree!long(maxD + 1);
+  bt1[di[0]] += 1;
 
-  auto bt2 = BiTree!long(maxD);
-  foreach (d; di[2..$]) bt2.add(d, 1);
+  auto bt2 = BiTree!long(maxD + 1);
+  foreach (d; di[2..$]) bt2[d] += 1;
 
-  auto ne = bt2.get(di[0]) - bt2.get(di[0] - 1);
+  auto ne = bt2[di[0]];
   auto r = 0L;
 
   foreach (i; 1..n-1) {
     auto d1 = di[i], d2 = di[i+1];
 
-    r += bt1.get(d1-1) * bt2.get(d1-1);
-    r += (bt1.get(maxD) - bt1.get(d1)) * (bt2.get(maxD) - bt2.get(d1));
-    r -= ne - (bt1.get(d1) - bt1.get(d1-1)) * (bt2.get(d1) - bt2.get(d1-1));
+    r += bt1[0..d1] * bt2[0..d1];
+    r += bt1[d1+1..$] * bt2[d1+1..$];
+    r -= ne - bt1[d1] * bt2[d1];
 
-    bt1.add(d1, 1);
-    ne += bt2.get(d1) - bt2.get(d1-1);
-    bt2.add(d2, -1);
-    ne -= bt1.get(d2) - bt1.get(d2-1);
+    bt1[d1] += 1;
+    ne += bt2[d1];
+    bt2[d2] += -1;
+    ne -= bt1[d2];
   }
 
   writeln(r);
@@ -40,24 +40,43 @@ void main()
 
 struct BiTree(T)
 {
-  T[] b; // buffer
-  const size_t s; // size
+  const size_t n;
+  T[] buf;
 
-  this(size_t t)
+  this(size_t n)
   {
-    s = t;
-    b = new T[](s + 1);
+    this.n = n;
+    this.buf = new T[](n + 1);
   }
+
+  void opIndexOpAssign(string op)(T val, size_t i)
+    if (op == "+")
+  {
+    ++i;
+    while (i <= n) {
+      buf[i] += val;
+      i += i & -i;
+    }
+  }
+
+  pure size_t opDollar() { return n; }
+
+  pure T opIndex(size_t i) const { return opSlice(i, i+1); }
+
+  pure T opSlice(size_t r, size_t l) const
+  {
+    return get(l) - get(r);
+  }
+
+private:
 
   pure T get(size_t i) const
   {
-    return i ? b[i] + get(i - (i & -i)) : 0;
-  }
-
-  void add(size_t i, T v)
-  {
-    if (i > s) return;
-    b[i] += v;
-    add(i + (i & -i), v);
+    auto s = T(0);
+    while (i > 0) {
+      s += buf[i];
+      i -= i & -i;
+    }
+    return s;
   }
 }

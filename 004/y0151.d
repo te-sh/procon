@@ -1,5 +1,4 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
-import std.container; // SList, DList, BinaryHeap
 
 version(unittest) {} else
 void main()
@@ -17,53 +16,72 @@ void main()
     switch (rd2[0]) {
     case "L":
       auto y = rd2[1].to!size_t, z = rd2[2].to!long;
-      pondL.add(pl(y), z);
+      pondL[pl(y)] += z;
       break;
     case "R":
       auto y = rd2[1].to!size_t, z = rd2[2].to!long;
-      pondR.add(pr(y), z);
+      pondR[pr(y)] += z;
       break;
     case "C":
       auto y = rd2[1].to!size_t, z = rd2[2].to!size_t;
-      auto nl = pondL.get(pl(z-1)) - pondL.get(pl(y-1));
-      auto nr = pondR.get(pr(z-1)) - pondR.get(pr(y-1));
+      auto nl = pondL[pl(y)..pl(z)];
+      auto nr = pondR[pr(y)..pr(z)];
       writeln(nl + nr);
       break;
     default:
       assert(0);
     }
 
-    auto vl = pondL.get(pl(0)) - pondL.get(pl(-1));
-    auto vr = pondR.get(pr(n-1)) - pondR.get(pr(n-2));
+    auto vl = pondL[pl(0)];
+    auto vr = pondR[pr(n-1)];
     if (vl) {
-      pondL.add(pl(0), -vl); pondR.add(pr(-1), vl);
+      pondL[pl(0)] += -vl; pondR[pr(-1)] += vl;
     }
     if (vr) {
-      pondR.add(pr(n-1), -vr); pondL.add(pl(n), vr);
+      pondR[pr(n-1)] += -vr; pondL[pl(n)] += vr;
     }
   }
 }
 
 struct BiTree(T)
 {
-  T[] b; // buffer
-  const size_t s; // size
+  const size_t n;
+  T[] buf;
 
-  this(size_t t)
+  this(size_t n)
   {
-    s = t;
-    b = new T[](s + 1);
+    this.n = n;
+    this.buf = new T[](n + 1);
   }
+
+  void opIndexOpAssign(string op)(T val, size_t i)
+    if (op == "+")
+  {
+    ++i;
+    while (i <= n) {
+      buf[i] += val;
+      i += i & -i;
+    }
+  }
+
+  pure size_t opDollar() { return n; }
+
+  pure T opIndex(size_t i) const { return opSlice(i, i+1); }
+
+  pure T opSlice(size_t r, size_t l) const
+  {
+    return get(l) - get(r);
+  }
+
+private:
 
   pure T get(size_t i) const
   {
-    return i ? b[i] + get(i - (i & -i)) : 0;
-  }
-
-  void add(size_t i, T v)
-  {
-    if (i > s) return;
-    b[i] += v;
-    add(i + (i & -i), v);
+    auto s = T(0);
+    while (i > 0) {
+      s += buf[i];
+      i -= i & -i;
+    }
+    return s;
   }
 }

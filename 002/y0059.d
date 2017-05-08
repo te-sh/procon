@@ -7,39 +7,61 @@ void main()
 {
   auto rd = readln.split, n = rd[0].to!size_t, k = rd[1].to!int;
 
-  auto bt = new BiTree!int(maxW);
+  auto bt = BiTree!int(maxW + 1);
   foreach (_; n.iota) {
     auto w = readln.chomp.to!int;
     if (w > 0) {
-      if (bt.get(maxW) - bt.get(w - 1) < k)
-        bt.add(w, 1);
+      if (bt[w..$] < k)
+        bt[w] += 1;
     } else {
       w = -w;
-      if (bt.get(w) - bt.get(w - 1) > 0)
-        bt.add(w, -1);
+      if (bt[w] > 0)
+        bt[w] += -1;
     }
   }
 
-  writeln(bt.get(maxW));
+  writeln(bt[0..$]);
 }
 
-class BiTree(T) {
-  T[] b; // buffer
-  size_t s; // size
+struct BiTree(T)
+{
+  const size_t n;
+  T[] buf;
 
-  this(size_t t) {
-    s = t;
-    b = new int[](s + 1);
+  this(size_t n)
+  {
+    this.n = n;
+    this.buf = new T[](n + 1);
   }
 
-  int get(size_t i) {
-    if (!i) return 0;
-    return b[i] + get(i - (i & -i));
+  void opIndexOpAssign(string op)(T val, size_t i)
+    if (op == "+")
+  {
+    ++i;
+    while (i <= n) {
+      buf[i] += val;
+      i += i & -i;
+    }
   }
 
-  void add(size_t i, T v) {
-    if (i > s) return;
-    b[i] += v;
-    add(i + (i & -i), v);
+  pure size_t opDollar() { return n; }
+
+  pure T opIndex(size_t i) const { return opSlice(i, i+1); }
+
+  pure T opSlice(size_t r, size_t l) const
+  {
+    return get(l) - get(r);
+  }
+
+private:
+
+  pure T get(size_t i) const
+  {
+    auto s = T(0);
+    while (i > 0) {
+      s += buf[i];
+      i -= i & -i;
+    }
+    return s;
   }
 }
