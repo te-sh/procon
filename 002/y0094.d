@@ -7,44 +7,48 @@ void main()
   auto n = readln.chomp.to!size_t;
   auto pi = n.iota.map!(_ => readln.split.to!(int[])).map!(rd => point(rd[0], rd[1])).array;
 
+  if (n == 0) {
+    writeln(1);
+    return;
+  }
+
   auto dij = new int[][](n, n);
   foreach (i; 0..n)
     foreach (j; i+1..n)
       dij[i][j] = dij[j][i] = (pi[i] - pi[j]).hypot2;
 
-  auto uf = new unionFind(n);
+  auto uf = UnionFind!size_t(n);
   foreach (i; 0..n)
     foreach (j; i+1..n)
       if (i != j && dij[i][j] <= 100)
         uf.unite(i, j);
 
-  auto gi = new size_t[][](n);
-  foreach (i; 0..n) gi[uf.find(i)] ~= i;
-
-  if (n == 0) {
-    writeln(1);
-  } else {
-    auto maxD = gi.filter!"!a.empty"
+  auto maxD = uf.groups
       .map!(g => dij.indexed(g).map!(di => di.indexed(g)).joiner.fold!max)
       .fold!max;
-    writefln("%.7f", maxD.to!real.sqrt + 2);
-  }
+  writefln("%.7f", maxD.to!real.sqrt + 2);
 }
 
-alias UnionFind!size_t unionFind;
 alias Point!int point;
 
-class UnionFind(T) {
-  T[] p; // parent
-  T s; // sentinel
+struct UnionFind(T)
+{
+  import std.algorithm, std.range;
 
-  this(T n) {
+  T[] p; // parent
+  const T s; // sentinel
+  const T n;
+
+  this(T n)
+  {
+    this.n = n;
     p = new T[](n);
     s = n + 1;
     p[] = s;
   }
 
-  T find(T i) {
+  T find(T i)
+  {
     if (p[i] == s) {
       return i;
     } else {
@@ -53,9 +57,19 @@ class UnionFind(T) {
     }
   }
 
-  void unite(T i, T j) {
+  void unite(T i, T j)
+  {
     auto pi = find(i), pj = find(j);
     if (pi != pj) p[pj] = pi;
+  }
+
+  bool isSame(T i, T j) { return find(i) == find(j); }
+
+  auto groups()
+  {
+    auto g = new T[][](n);
+    foreach (i; 0..n) g[find(i)] ~= i;
+    return g.filter!(l => !l.empty);
   }
 }
 

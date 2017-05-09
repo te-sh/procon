@@ -37,10 +37,7 @@ void main()
         }
       }
 
-  auto gi = new size_t[][](n);
-  foreach (i; 0..n) gi[uf.find(i)] ~= i;
-
-  auto gpi = gi.filter!"!a.empty".map!(g => pi.indexed(g).array.convexHull);
+  auto gpi = uf.groups.map!(g => pi.indexed(g).array.convexHull);
   auto maxD = 0;
   foreach (gp; gpi)
     foreach (i; 0..gp.length)
@@ -52,11 +49,15 @@ void main()
 
 struct UnionFind(T)
 {
+  import std.algorithm, std.range;
+
   T[] p; // parent
   const T s; // sentinel
+  const T n;
 
   this(T n)
   {
+    this.n = n;
     p = new T[](n);
     s = n + 1;
     p[] = s;
@@ -76,6 +77,15 @@ struct UnionFind(T)
   {
     auto pi = find(i), pj = find(j);
     if (pi != pj) p[pj] = pi;
+  }
+
+  bool isSame(T i, T j) { return find(i) == find(j); }
+
+  auto groups()
+  {
+    auto g = new T[][](n);
+    foreach (i; 0..n) g[find(i)] ~= i;
+    return g.filter!(l => !l.empty);
   }
 }
 

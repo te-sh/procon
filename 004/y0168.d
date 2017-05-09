@@ -18,10 +18,10 @@ void main()
   pli.sort!"a.len2 < b.len2";
 
   auto calc() {
-    auto uf = new UnionFind!size_t(n);
+    auto uf = UnionFind!size_t(n);
     foreach (pl; pli) {
       uf.unite(pl.i, pl.j);
-      if (uf.find(0) == uf.find(n - 1)) return pl.len2;
+      if (uf.isSame(0, n - 1)) return pl.len2;
     }
     return 0L;
   }
@@ -52,17 +52,24 @@ struct Point(T) {
   T hypot2() { return x ^^ 2 + y ^^ 2; }
 }
 
-class UnionFind(T) {
-  T[] p; // parent
-  T s; // sentinel
+struct UnionFind(T)
+{
+  import std.algorithm, std.range;
 
-  this(T n) {
+  T[] p; // parent
+  const T s; // sentinel
+  const T n;
+
+  this(T n)
+  {
+    this.n = n;
     p = new T[](n);
     s = n + 1;
     p[] = s;
   }
 
-  T find(T i) {
+  T find(T i)
+  {
     if (p[i] == s) {
       return i;
     } else {
@@ -71,8 +78,18 @@ class UnionFind(T) {
     }
   }
 
-  void unite(T i, T j) {
+  void unite(T i, T j)
+  {
     auto pi = find(i), pj = find(j);
     if (pi != pj) p[pj] = pi;
+  }
+
+  bool isSame(T i, T j) { return find(i) == find(j); }
+
+  auto groups()
+  {
+    auto g = new T[][](n);
+    foreach (i; 0..n) g[find(i)] ~= i;
+    return g.filter!(l => !l.empty);
   }
 }

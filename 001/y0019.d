@@ -17,9 +17,6 @@ void main()
     pi[i] = s;
   }
 
-  size_t[][size_t] ci;
-  foreach (i; n.iota) ci[uf.find(i)] ~= i;
-
   auto vi = new bool[](n);
 
   auto findLoop(size_t d) {
@@ -45,7 +42,7 @@ void main()
   }
 
   auto pt = 0;
-  foreach (c; ci.byValue) {
+  foreach (c; uf.groups) {
     auto ri = findRoot(c);
     pt += ri.map!(r => li.indexed(c).sum + li[r]).fold!min;
   }
@@ -53,17 +50,24 @@ void main()
   writefln("%.1f", pt.to!real / 2);
 }
 
-class UnionFind(T) {
-  T[] p; // parent
-  T s; // sentinel
+struct UnionFind(T)
+{
+  import std.algorithm, std.range;
 
-  this(T n) {
+  T[] p; // parent
+  const T s; // sentinel
+  const T n;
+
+  this(T n)
+  {
+    this.n = n;
     p = new T[](n);
     s = n + 1;
     p[] = s;
   }
 
-  T find(T i) {
+  T find(T i)
+  {
     if (p[i] == s) {
       return i;
     } else {
@@ -72,8 +76,18 @@ class UnionFind(T) {
     }
   }
 
-  void unite(T i, T j) {
+  void unite(T i, T j)
+  {
     auto pi = find(i), pj = find(j);
     if (pi != pj) p[pj] = pi;
+  }
+
+  bool isSame(T i, T j) { return find(i) == find(j); }
+
+  auto groups()
+  {
+    auto g = new T[][](n);
+    foreach (i; 0..n) g[find(i)] ~= i;
+    return g.filter!(l => !l.empty);
   }
 }
