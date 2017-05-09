@@ -8,15 +8,12 @@ void main()
   auto n = rd[0].to!size_t, v = rd[1].to!size_t;
   auto sx = rd[2].to!int - 1, sy = rd[3].to!int - 1;
   auto gx = rd[4].to!int - 1, gy = rd[5].to!int - 1;
-  auto lij = Matrix!int(n.iota.map!(_ => readln.split.to!(int[])).array);
+  auto lij = Grid!(int, int)(n.iota.map!(_ => readln.split.to!(int[])).array);
 
   auto eij = new Edge!int[][](n ^^ 2);
-  foreach (p; lij.points!int)
-    foreach (sib; sibPoints) {
-      auto np = p + sib;
-      if (lij.validIndex(np))
-        eij[p.x + p.y * n] ~= Edge!int(np.x + np.y * n, lij[np]);
-    }
+  foreach (p; lij.points)
+    foreach (np; lij.sibPoints4(p))
+      eij[p.x + p.y * n] ~= Edge!int(np.x + np.y * n, lij[np]);
 
   auto s = sx + sy * n;
   auto g = gx + gy * n;
@@ -64,26 +61,29 @@ struct Point(T) {
 
 alias Point!int point;
 
-const auto sibPoints = [point(-1, 0), point(0, -1), point(1, 0), point(0, 1)];
-
-struct Matrix(T)
+struct Grid(T, U)
 {
   import std.algorithm, std.conv, std.range, std.traits, std.typecons;
 
+  const sibs4 = [Point!U(-1, 0), Point!U(0, -1), Point!U(1, 0), Point!U(0, 1)];
+
   T[][] m;
-  size_t rows, cols;
+  const size_t rows, cols;
 
   mixin Proxy!m;
 
   this(size_t r, size_t c) { rows = r; cols = c; m = new T[][](rows, cols); }
   this(T[][] s) { rows = s.length; cols = s[0].length; m = s; }
 
-  auto opIndex(U)(U p) { static if (is(U == Point!V, V)) return m[p.y][p.x]; else return m[p]; }
-  auto opIndex(size_t y, size_t x) { return m[y][x]; }
+  pure auto dup() const { return Grid(m.map!(r => r.dup).array); }
+  pure auto opIndex(Point!U p) const { return m[p.y][p.x]; }
+  pure auto opIndex(size_t y) { return m[y]; }
+  pure auto opIndex(size_t y, size_t x) const { return m[y][x]; }
   static if (isAssignable!T) {
-    auto opIndexAssign(U)(T v, Point!U p) { return m[p.y][p.x] = v; }
+    auto opIndexAssign(T v, Point!U p) { return m[p.y][p.x] = v; }
     auto opIndexAssign(T v, size_t y, size_t x) { return m[y][x] = v; }
   }
-  auto validIndex(U)(Point!U p) { return p.x >= 0 && p.x < cols && p.y >= 0 && p.y < rows; }
-  auto points(U)() { return rows.to!U.iota.map!(y => cols.to!U.iota.map!(x => Point!U(x, y))).joiner; }
+  pure auto validPoint(Point!U p) const { return p.x >= 0 && p.x < cols && p.y >= 0 && p.y < rows; }
+  pure auto points() const { return rows.to!U.iota.map!(y => cols.to!U.iota.map!(x => Point!U(x, y))).joiner; }
+  pure auto sibPoints4(Point!U p) const { return sibs4.map!(s => p + s).filter!(p => validPoint(p)); }
 }
