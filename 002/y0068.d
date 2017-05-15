@@ -1,6 +1,8 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 import std.container; // SList, DList, BinaryHeap
 
+// allowable-error: 10 ** -9
+
 version(unittest) {} else
 void main()
 {

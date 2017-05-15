@@ -40,6 +40,7 @@ def create_child(file)
 end
 
 def run(file)
+  options = parse_options(file)
   get_samples(file).each do |sample|
     puts(cyan { "Run #{file}" })
     o, e, _s = Open3.capture3('rdmd', file, stdin_data: sample.in)
@@ -51,12 +52,24 @@ def run(file)
     print o
     print e
 
-    put_result(o, sample)
+    put_result(o, sample, options)
   end
 end
 
-def put_result(o, sample)
-  if o == sample.out
+def parse_options(file)
+  options = {}
+  File.open(file, 'r') do |f|
+    f.each_line do |line|
+      if line =~ %r{//\s+allowable-error:\s+(.*)}
+        options[:allowable_error] = eval(Regexp.last_match.to_a[1])
+      end
+    end
+  end
+  options
+end
+
+def put_result(o, sample, options)
+  if acceptable?(o, sample, options)
     puts(magenta { '===== Result =====' })
     puts(green { 'SUCCESS' })
   else
@@ -66,6 +79,16 @@ def put_result(o, sample)
     puts(red { 'FAILURE' })
   end
   puts
+end
+
+def acceptable?(o, sample, options)
+  if options[:allowable_error]
+    o.split(/\s+/).zip(sample.out.split(/\s+/)).all? do |n1, n2|
+      (n1.to_f - n2.to_f).abs < options[:allowable_error]
+    end
+  else
+    o == sample.out
+  end
 end
 
 def get_samples(file)
@@ -85,7 +108,7 @@ def fetch_samples(file)
     doc = Nokogiri::HTML.parse(f.read)
     divs = doc.css('div.sample')
     divs.map do |div|
-      Sample.new(*div.css('pre').map(&:inner_html))
+      Sample.new(*div.css('pre').map(&:inner_html).map { |s| s.chomp + "\n" })
     end
   end
 end

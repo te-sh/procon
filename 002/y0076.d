@@ -1,5 +1,7 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
+// allowable-error: 10 ** -5
+
 version(unittest) {} else
 void main()
 {

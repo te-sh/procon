@@ -1,6 +1,8 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 import std.math;      // math functions
 
+// allowable-error: 10 ** -6
+
 version(unittest) {} else
 void main()
 {

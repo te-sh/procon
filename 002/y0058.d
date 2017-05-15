@@ -1,6 +1,8 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 import std.random;    // random
 
+// allowable-error: 10 ** -3
+
 const auto iter = size_t(1_000_000);
 
 version(unittest) {} else
