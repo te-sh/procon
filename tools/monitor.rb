@@ -108,7 +108,7 @@ def fetch_samples(file)
     doc = Nokogiri::HTML.parse(f.read)
     divs = doc.css('div.sample')
     divs.map do |div|
-      inout = div.css('pre').map(&:inner_html).map do |s|
+      inout = div.css('pre').take(2).map(&:inner_html).map do |s|
         s.sub(/\A\n/, '').chomp + "\n"
       end
       Sample.new(*inout)
