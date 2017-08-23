@@ -12,6 +12,7 @@ defaults:
       type: yukicoder
     values:
       layout: yukicoder
+      subtitle: yukicoder
 
 markdown: kramdown
 theme: minima
