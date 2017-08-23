@@ -1,10 +1,17 @@
-title: yukicoder を解いてみたメモ
-baseurl: /yukicoder
+title: 競技プログラミングの問題を解いてみたメモ
+baseurl: /procon
 github_username: te-sh
 
 collections:
   memos:
     output: true
+
+defaults:
+  - scope:
+      path: ""
+      type: memos
+    values:
+      layout: page
 
 markdown: kramdown
 theme: minima
