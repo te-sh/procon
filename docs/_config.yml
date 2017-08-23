@@ -3,20 +3,22 @@ baseurl: /procon
 github_username: te-sh
 
 collections:
-  memos:
+  yukicoder:
     output: true
 
 defaults:
   - scope:
       path: ""
-      type: memos
+      type: yukicoder
     values:
       layout: page
 
 markdown: kramdown
 theme: minima
+
 gems:
   - jekyll-feed
+
 exclude:
   - Gemfile
   - Gemfile.lock

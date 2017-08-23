@@ -15,7 +15,8 @@ layout: default
   <tr>
     {% for j in (1..10) %}
     {% assign number = i | minus: 1 | times: 10 | plus: j | plus: offset %}
-    {% assign doc = site.collections[0].docs | where: "number": number %}
+    {% assign coll = site.collections | where: "label": "yukicoder" | first %}
+    {% assign doc = coll.docs | where: "number": number %}
     <td class="text-center col-md-1">
       {% if doc[0] %}
       <a href="{{ site.baseurl }}{{ doc[0].url }}">No.{{ number }}</a>
