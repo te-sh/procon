@@ -11,7 +11,7 @@ defaults:
       path: ""
       type: yukicoder
     values:
-      layout: page
+      layout: yukicoder
 
 markdown: kramdown
 theme: minima

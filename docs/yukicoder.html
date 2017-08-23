@@ -1,0 +1,27 @@
+---
+layout: default
+---
+<p><a href="http://yukicoder.me">yukicoder</a> の問題を解いたときのメモです.</p>
+
+{% for a in (0..8) %}
+{% assign offset = a | times: 50 %}
+<h3>No.{{ offset | plus: 1 }} - No.{{ offset | plus: 50 }}</h3>
+<table class="table table-bordered">
+  {% for i in (1..5) %}
+  <tr>
+    {% for j in (1..10) %}
+    {% assign number = i | minus: 1 | times: 10 | plus: j | plus: offset %}
+    {% assign coll = site.collections | where: "label": "yukicoder" | first %}
+    {% assign doc = coll.docs | where: "number": number %}
+    <td class="text-center col-md-1">
+      {% if doc[0] %}
+      <a href="{{ site.baseurl }}{{ doc[0].url }}">No.{{ number }}</a>
+      {% else %}
+      <span class="text-muted">No.{{ number }}</span>
+      {% endif %}
+    </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+{% endfor %}

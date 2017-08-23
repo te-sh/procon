@@ -3,29 +3,14 @@ layout: default
 ---
 <p>競技プログラミング初心者が <a href="http://yukicoder.me">yukicoder</a> の問題を解いたときのメモです.</p>
 
-<p>分からなかった問題は解説を読みながら書いてますので, その解説を丸パクリしてるようなメモもあると思います. 問題があるようであれば <a href="https://github.com/te-sh/yukicoder/issues">issue</a> に登録してください.</p>
+<p>分からなかった問題は解説を読みながら書いてますので, その解説を丸パクリしてるようなメモもあると思います. 問題があるようであれば <a href="https://github.com/te-sh/procon/issues">issue</a> に登録してください.</p>
 
 <p>コードはD言語で書いています.</p>
 
-{% for a in (0..8) %}
-{% assign offset = a | times: 50 %}
-<h3>No.{{ offset | plus: 1 }} - No.{{ offset | plus: 50 }}</h3>
-<table class="table table-bordered">
-  {% for i in (1..5) %}
-  <tr>
-    {% for j in (1..10) %}
-    {% assign number = i | minus: 1 | times: 10 | plus: j | plus: offset %}
-    {% assign coll = site.collections | where: "label": "yukicoder" | first %}
-    {% assign doc = coll.docs | where: "number": number %}
-    <td class="text-center col-md-1">
-      {% if doc[0] %}
-      <a href="{{ site.baseurl }}{{ doc[0].url }}">No.{{ number }}</a>
-      {% else %}
-      <span class="text-muted">No.{{ number }}</span>
-      {% endif %}
-    </td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
-</table>
-{% endfor %}
+<hr style="margin-bottom: 10px">
+
+<h3>コンテスト一覧</h3>
+
+<ul class="list-group">
+  <li class="list-group-item"><a href="yukicoder.html">yukicoder</a></li>
+</ul>
