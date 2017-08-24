@@ -17,7 +17,7 @@ defaults:
 markdown: kramdown
 theme: minima
 
-gems:
+plugins:
   - jekyll-feed
 
 exclude:
