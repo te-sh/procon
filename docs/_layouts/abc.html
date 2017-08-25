@@ -1,0 +1,17 @@
+---
+layout: default
+---
+<script type="text/javascript"
+        src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<article class="memo">
+  <h1 id="no{{ page.number }}{{ page.problem }}" class="title">No.{{ page.number }} {{ page.problem }}</h1>
+  <ul class="actions list-inline">
+    <li><a href="http://abc{{ page.number }}.contest.atcoder.jp/tasks/abc{{ page.number }}_{{ page.a2n[page.problem] }}">問題</a></li>
+    <li><a href="http://github.com/te-sh/procon/blob/master{{ page.url | replace: '.html', '.d' }}">コード</a></li>
+  </ul>
+
+  <div class="content">
+    {{ content }}
+  </div>
+</article>

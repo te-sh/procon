@@ -1,0 +1,27 @@
+---
+layout: default
+subtitle: AtCoder Beginner Contest
+---
+<p><a href="https://atcoder.jp/">AtCoder</a> で行われている AtCoder Beginner Contest の問題を解いたときのメモです.</p>
+
+{% assign coll = site.collections | where: "label", "abc" | first %}
+{% assign problems = "A B C D" | split: " " %}
+
+<table class="table table-bordered">
+  {% for n in (1..1) %}
+  {% assign number = n | prepend: '00' | slice: -3, 3 %}
+  <tr>
+    <th>#{{ number }}</th>
+    {% for problem in problems %}
+    <td>
+      {% assign doc = coll.docs | where: "number", number | where: "problem", problem | first %}
+      {% if doc %}
+      <a href="{{ site.baseurl }}{{ doc.url }}">{{ problem }}問題</a>
+      {% else %}
+      {{ problem }}問題
+      {% endif %}
+    </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>

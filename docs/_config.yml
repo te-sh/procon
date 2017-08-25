@@ -5,6 +5,8 @@ github_username: te-sh
 collections:
   yukicoder:
     output: true
+  abc:
+    output: true
 
 defaults:
   - scope:
@@ -13,6 +15,17 @@ defaults:
     values:
       layout: yukicoder
       subtitle: yukicoder
+  - scope:
+      path: ""
+      type: abc
+    values:
+      layout: abc
+      subtitle: AtCoder Beginner Contest
+      a2n:
+        A: 1
+        B: 2
+        C: 3
+        D: 4
 
 markdown: kramdown
 theme: minima
