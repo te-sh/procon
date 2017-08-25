@@ -12,8 +12,8 @@ class OjTester
 
   def listen
     dirs = DIRS.map { |dir| File.join(ROOT, dir) }
-    listener = Listen.to(*dirs) do |modified, _added, _removed|
-      modified.each do |file|
+    listener = Listen.to(*dirs) do |modified, added, _removed|
+      [modified, added].flatten.each do |file|
         run_test(file)
       end
     end
