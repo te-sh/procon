@@ -1,3 +1,84 @@
+import std.algorithm, std.conv, std.range, std.stdio, std.string;
+
+const mod = 10 ^^ 9 + 7;
+alias mint = FactorRing!mod;
+alias graph = Graph!(int, size_t);
+alias edge = graph.Edge;
+
+version(unittest) {} else
+void main()
+{
+  auto n = readln.chomp.to!size_t;
+  auto rd1 = readln.split.to!(size_t[]), a = rd1[0]-1, b = rd1[1]-1;
+  auto m = readln.chomp.to!size_t;
+  auto g = new edge[][](n);
+  foreach (_; 0..m) {
+    auto rd2 = readln.split.to!(size_t[]), x = rd2[0]-1, y = rd2[1]-1;
+    g[x] ~= edge(x, y, 1);
+    g[y] ~= edge(y, x, 1);
+  }
+
+  auto d = graph.dijkstra(g, a), maxD = d.reduce!max;
+
+  auto r = new mint[](n);
+  r[a] = 1;
+  foreach (i; 1..maxD+1)
+    foreach (j; 0..n)
+      if (d[j] == i)
+        foreach (e; g[j])
+          if (d[e.dst] == i-1)
+            r[j] += r[e.dst];
+
+  writeln(r[b]);
+}
+
+template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+{
+  import std.container;
+
+  const inf = _inf, sent = _sent;
+
+  struct Edge
+  {
+    Node src, dst;
+    Wt wt;
+  }
+
+  Wt[] dijkstra(Edge[][] g, Node s)
+  {
+    Wt[] dist;
+    Node[] prev;
+    dijkstra(g, s, dist, prev);
+    return dist;
+  }
+
+  void dijkstra(Edge[][] g, Node s, out Wt[] dist, out Node[] prev)
+  {
+    auto n = g.length;
+
+    dist = new Wt[](n);
+    dist[] = inf;
+    dist[s] = 0;
+
+    prev = new Node[](n);
+    prev[] = sent;
+
+    auto q = heapify!("a.wt > b.wt")(Array!Edge(Edge(sent, s)));
+    while (!q.empty) {
+      auto e = q.front; q.removeFront();
+      if (prev[e.dst] != sent) continue;
+      prev[e.dst] = e.src;
+      foreach (f; g[e.dst]) {
+        auto w = e.wt + f.wt;
+        if (dist[f.dst] > w) {
+          dist[f.dst] = w;
+          q.insert(Edge(f.src, f.dst, w));
+        }
+      }
+    }
+  }
+}
+
 struct FactorRing(int m, bool pos = false)
 {
   version(BigEndian) {
@@ -50,42 +131,4 @@ struct FactorRing(int m, bool pos = false)
 
   auto opOpAssign(string op)(FactorRing!(m, pos) rhs)
     if (op == "+" || op == "-" || op == "*") { return opOpAssign!op(rhs.vi); }
-
-  pure auto inv() const
-  {
-    import ex_euclid;
-    int x = vi, a, b;
-    exEuclid(x, m, a, b);
-    return FactorRing!(m, pos)(mod(a));
-  }
-}
-
-unittest
-{
-  alias FactorRing!(2_000_000_000) mint;
-
-  assert(mint(2_100_000_001, true) == 100_000_001);
-  assert(mint(2_100_000_001, true) > 100_000_000);
-  assert(mint(2_100_000_000, true) < 100_000_002);
-
-  auto a = new mint[](1);
-  a[0] = 1;
-  assert(a[0] == 1);
-  a[0] += 3;
-  assert(a[0] == 4);
-  a[0] -= 1;
-  assert(a[0] == 3);
-  a[0] *= 3;
-  assert(a[0] == 9);
-
-  assert(mint(1_800_000_000) + mint(1_700_000_000) == 1_500_000_000);
-  assert(mint(1_800_000_000) * (-1) - mint(1_700_000_000) == 500_000_000);
-  assert(mint(123_456_789) * mint(123_456_789) == 750_190_521);
-
-  assert(mint(1_800_000_000) + 1_700_000_000 == 1_500_000_000);
-  assert(mint(1_800_000_000) * (-1) - 1_700_000_000 == 500_000_000);
-  assert(mint(123_456_789) * 123_456_789 == 750_190_521);
-
-  assert(FactorRing!11(3).inv == 4);
-  assert(FactorRing!7(4).inv == 2);
 }

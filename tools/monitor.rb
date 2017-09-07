@@ -23,6 +23,7 @@ class OjTester
   end
 
   def run_test(file)
+    return if file.end_with?('#')
     tokens = file.sub(ROOT, '').split('/')[1..-1]
     site = tokens.shift
 

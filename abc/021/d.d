@@ -1,3 +1,25 @@
+import std.algorithm, std.conv, std.range, std.stdio, std.string;
+
+const mod = 10 ^^ 9 + 7;
+alias mint = FactorRing!mod;
+
+version(unittest) {} else
+void main()
+{
+  auto n = readln.chomp.to!int-1;
+  auto k = readln.chomp.to!int;
+
+  auto fact = new mint[](n+k+1);
+  fact[0] = 1;
+  foreach (i; 1..n+k+1) fact[i] = fact[i-1] * i;
+
+  auto invFact = new mint[](n+k+1);
+  invFact[n+k] = fact[n+k].inv;
+  foreach_reverse (i; 0..n+k) invFact[i] = invFact[i+1] * (i+1);
+
+  writeln(fact[n+k] * invFact[k] * invFact[n]);
+}
+
 struct FactorRing(int m, bool pos = false)
 {
   version(BigEndian) {
@@ -53,39 +75,20 @@ struct FactorRing(int m, bool pos = false)
 
   pure auto inv() const
   {
-    import ex_euclid;
     int x = vi, a, b;
     exEuclid(x, m, a, b);
     return FactorRing!(m, pos)(mod(a));
   }
 }
 
-unittest
+pure T exEuclid(T)(T a, T b, ref T x, ref T y)
 {
-  alias FactorRing!(2_000_000_000) mint;
-
-  assert(mint(2_100_000_001, true) == 100_000_001);
-  assert(mint(2_100_000_001, true) > 100_000_000);
-  assert(mint(2_100_000_000, true) < 100_000_002);
-
-  auto a = new mint[](1);
-  a[0] = 1;
-  assert(a[0] == 1);
-  a[0] += 3;
-  assert(a[0] == 4);
-  a[0] -= 1;
-  assert(a[0] == 3);
-  a[0] *= 3;
-  assert(a[0] == 9);
-
-  assert(mint(1_800_000_000) + mint(1_700_000_000) == 1_500_000_000);
-  assert(mint(1_800_000_000) * (-1) - mint(1_700_000_000) == 500_000_000);
-  assert(mint(123_456_789) * mint(123_456_789) == 750_190_521);
-
-  assert(mint(1_800_000_000) + 1_700_000_000 == 1_500_000_000);
-  assert(mint(1_800_000_000) * (-1) - 1_700_000_000 == 500_000_000);
-  assert(mint(123_456_789) * 123_456_789 == 750_190_521);
-
-  assert(FactorRing!11(3).inv == 4);
-  assert(FactorRing!7(4).inv == 2);
+  auto g = a;
+  x = 1;
+  y = 0;
+  if (b != 0) {
+    g = exEuclid(b, a % b, y, x);
+    y -= a / b * x;
+  }
+  return g;
 }
