@@ -23,7 +23,8 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
     auto n = g.length;
 
     dist = new Wt[](n);
-    dist[1..$][] = inf;
+    dist[] = inf;
+    dist[s] = 0;
 
     prev = new Node[](n);
     prev[] = sent;

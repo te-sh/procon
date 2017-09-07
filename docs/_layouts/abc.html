@@ -7,7 +7,7 @@ layout: default
 <article class="memo">
   <h1 id="no{{ page.number }}{{ page.problem }}" class="title">No.{{ page.number }} {{ page.problem }}</h1>
   <ul class="actions list-inline">
-    <li><a href="http://abc{{ page.number }}.contest.atcoder.jp/tasks/abc{{ page.number }}_{{ page.a2n[page.problem] }}">問題</a></li>
+    <li><a href="http://abc{{ page.number }}.contest.atcoder.jp/tasks/abc{{ page.number }}_{% if page.number < '020' %}{{ page.a2n[page.problem] }}{% else %}{{ page.problem | downcase }}{% endif %}">問題</a></li>
     <li><a href="http://github.com/te-sh/procon/blob/master{{ page.url | replace: '.html', '.d' }}">コード</a></li>
   </ul>
 

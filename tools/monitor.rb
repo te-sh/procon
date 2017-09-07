@@ -46,10 +46,11 @@ class OjTester
   end
 
   def abc_url(tokens)
+    problem = File.basename(tokens[1], '.d')
     format 'http://abc%s.contest.atcoder.jp/tasks/abc%s_%s',
            tokens[0],
            tokens[0],
-           File.basename(tokens[1], '.d').tr('a-d', '1-4')
+           tokens[0] <= '019' ? problem.tr('a-d', '1-4') : problem
   end
 
   def yukicoder_url(tokens)
