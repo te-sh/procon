@@ -27,34 +27,51 @@ class OjTester
     tokens = file.sub(ROOT, '').split('/')[1..-1]
     site = tokens.shift
 
-    download_test(site, tokens) if @prev_file != file
+    download_test(file, site, tokens) if @prev_file != file
     compile(site, file)
     test
 
     @prev_file = file
   end
 
-  def download_test(site, tokens)
+  def download_test(file, site, tokens)
     url = case site
           when 'abc'
-            abc_url(tokens)
+            abc_url(file, tokens)
           when 'yukicoder'
-            yukicoder_url(tokens)
+            yukicoder_url(file, tokens)
           end
     p url
     FileUtils.rm_r('test') if File.exist?('test')
     system "oj download #{url}"
   end
 
-  def abc_url(tokens)
+  def abc_url(file, tokens)
+    opts = abc_opts(file)
     problem = File.basename(tokens[1], '.d')
-    format 'http://abc%s.contest.atcoder.jp/tasks/abc%s_%s',
+    path = if opts[:path]
+             opts[:path]
+           else
+             format 'abc%s_%s',
+                    tokens[0],
+                    tokens[0] <= '019' ? problem.tr('a-d', '1-4') : problem
+           end
+    format 'http://abc%s.contest.atcoder.jp/tasks/%s',
            tokens[0],
-           tokens[0],
-           tokens[0] <= '019' ? problem.tr('a-d', '1-4') : problem
+           path
   end
 
-  def yukicoder_url(tokens)
+  def abc_opts(file)
+    opts = {}
+    IO.foreach(file) do |line|
+      if line =~ %r(// path: (.*))
+        opts[:path] = Regexp.last_match[1]
+      end
+    end
+    opts
+  end
+
+  def yukicoder_url(_file, tokens)
     format 'https://yukicoder.me/problems/no/%d',
            File.basename(tokens[1], '.d')[1..-1].to_i
   end
