@@ -47,8 +47,8 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 
 unittest
 {
-  alias Graph!(int, size_t) graph;
-  alias graph.Edge Edge;
+  alias graph = Graph!(int, size_t);
+  alias Edge = graph.Edge;
 
   auto g = new Edge[][](6);
   g[0] = [Edge(0, 1, 5), Edge(0, 2, 4), Edge(0, 3, 2)];

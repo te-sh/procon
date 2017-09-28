@@ -43,7 +43,7 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9)
 
 unittest
 {
-  alias Graph!(int, size_t) graph;
+  alias graph = Graph!(int, size_t);
 
   auto g = new int[][](6, 6);
   foreach (ref i; g) i[] = graph.inf;
