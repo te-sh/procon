@@ -34,3 +34,20 @@ unittest
   assert(bsr(6) == 2);
   assert(popcnt(6) == 2);
 }
+
+// avoid the bug of dlang
+// https://issues.dlang.org/show_bug.cgi?id=17467
+
+import std.bitmanip;
+
+auto lshift(ref BitArray ba, size_t n)
+{
+  if (n % 64 == 0) {
+    if (n > 0) {
+      ba <<= 1;
+      ba <<= n-1;
+    }
+  } else {
+    ba <<= n;
+  }
+}
