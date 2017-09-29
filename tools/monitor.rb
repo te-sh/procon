@@ -9,6 +9,7 @@ ROOT = File.absolute_path(File.join(__dir__, '..'))
 # Tester with online-judge-tool
 class OjTester
   DIRS = %w[abc yukicoder].freeze
+  DENVS = { 'abc' => 'dmd-2.070.1', 'yukicoder' => 'dmd-2.076.0' }.freeze
 
   def listen
     dirs = DIRS.map { |dir| File.join(ROOT, dir) }
@@ -27,7 +28,7 @@ class OjTester
     tokens = file.sub(ROOT, '').split('/')[1..-1]
     site = tokens.shift
 
-    download_test(file, site, tokens) if @prev_file != file
+    download_test(file, site, tokens)
     compile(site, file)
     test
 
@@ -41,9 +42,11 @@ class OjTester
           when 'yukicoder'
             yukicoder_url(file, tokens)
           end
-    p url
+    puts "url: #{url}"
+    return if @prev_url == url
     FileUtils.rm_r('test') if File.exist?('test')
     system "oj download #{url}"
+    @prev_url = url
   end
 
   def abc_url(file, tokens)
@@ -83,7 +86,8 @@ class OjTester
               when 'yukicoder'
                 '-m64 -w -wi -O -release -inline'
               end
-    system "dmd -ofa.out #{options} #{file}"
+
+    system "denv local #{DENVS[site]}; dmd --version; dmd -ofa.out #{options} #{file}"
   end
 
   def test
