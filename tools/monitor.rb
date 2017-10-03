@@ -8,8 +8,8 @@ ROOT = File.absolute_path(File.join(__dir__, '..'))
 
 # Tester with online-judge-tool
 class OjTester
-  DIRS = %w[abc yukicoder].freeze
-  DENVS = { 'abc' => 'dmd-2.070.1', 'yukicoder' => 'dmd-2.076.0' }.freeze
+  DIRS = %w[abc arc yukicoder].freeze
+  DENVS = { 'abc' => 'dmd-2.070.1', 'arc' => 'dmd-2.070.1', 'yukicoder' => 'dmd-2.076.0' }.freeze
 
   def listen
     dirs = DIRS.map { |dir| File.join(ROOT, dir) }
@@ -39,6 +39,8 @@ class OjTester
     url = case site
           when 'abc'
             abc_url(file, tokens)
+          when 'arc'
+            arc_url(file, tokens)
           when 'yukicoder'
             yukicoder_url(file, tokens)
           end
@@ -50,7 +52,7 @@ class OjTester
   end
 
   def abc_url(file, tokens)
-    opts = abc_opts(file)
+    opts = atcoder_opts(file)
     problem = File.basename(tokens[1], '.d')
     path = if opts[:path]
              opts[:path]
@@ -64,7 +66,22 @@ class OjTester
            path
   end
 
-  def abc_opts(file)
+  def arc_url(file, tokens)
+    opts = atcoder_opts(file)
+    problem = File.basename(tokens[1], '.d')
+    path = if opts[:path]
+             opts[:path]
+           else
+             format 'arc%s_%s',
+                    tokens[0],
+                    tokens[0] <= '019' ? problem.tr('a-d', '1-4') : problem
+           end
+    format 'http://arc%s.contest.atcoder.jp/tasks/%s',
+           tokens[0],
+           path
+  end
+
+  def atcoder_opts(file)
     opts = {}
     IO.foreach(file) do |line|
       if line =~ %r(// path: (.*))
@@ -72,6 +89,11 @@ class OjTester
       end
     end
     opts
+  end
+
+  def yukicoder_url(_file, tokens)
+    format 'https://yukicoder.me/problems/no/%d',
+           File.basename(tokens[1], '.d')[1..-1].to_i
   end
 
   def yukicoder_url(_file, tokens)
