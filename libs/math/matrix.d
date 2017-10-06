@@ -1,18 +1,21 @@
-T[][] matMul(T)(T[][] a, T[][] b)
+T[][] matMul(T)(const T[][] a, const T[][] b)
 {
   auto l = b.length, m = a.length, n = b[0].length;
   auto c = new T[][](m, n);
-  foreach (i; 0..m)
+  foreach (i; 0..m) {
+    static if (T.init != 0) c[i][] = 0;
     foreach (j; 0..n)
       foreach (k; 0..l)
         c[i][j] += a[i][k] * b[k][j];
+  }
   return c;
 }
 
-T[] matMulVec(T)(T[][] a, T[] b)
+T[] matMulVec(T)(const T[][] a, const T[] b)
 {
   auto l = b.length, m = a.length;
   auto c = new T[](m);
+  static if (T.init != 0) c[] = 0;
   foreach (i; 0..m)
     foreach (j; 0..l)
       c[i] += a[i][j] * b[j];

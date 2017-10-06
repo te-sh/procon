@@ -20,7 +20,6 @@ struct SegmentTree(T, T unit, alias pred = "a + b")
   {
     this(init.length);
     buf[an..an+n][] = init[];
-
     foreach_reverse (i; 1..an)
       buf[i] = predFun(buf[i*2], buf[i*2+1]);
   }
@@ -44,8 +43,8 @@ struct SegmentTree(T, T unit, alias pred = "a + b")
     return predFun(r1, r2);
   }
 
-  pure size_t opDollar() const { return n; }
-  pure T opIndex(size_t i) const { return buf[i + an]; }
+  pure size_t opDollar() { return n; }
+  pure T opIndex(size_t i) { return buf[i + an]; }
 }
 
 unittest

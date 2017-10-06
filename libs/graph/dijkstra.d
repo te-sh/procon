@@ -29,7 +29,7 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
     prev = new Node[](n);
     prev[] = sent;
 
-    auto q = heapify!("a.wt > b.wt")(Array!Edge(Edge(sent, s)));
+    auto q = heapify!("a.wt > b.wt")(Array!Edge(Edge(sent, s, 0)));
     while (!q.empty) {
       auto e = q.front; q.removeFront();
       if (prev[e.dst] != sent) continue;
