@@ -4,7 +4,7 @@ template Graph(Node)
 
   Node[] topologicalSort(Node[][] g)
   {
-    auto n = g.length, h = new size_t[](n);
+    auto n = cast(Node)(g.length), h = new size_t[](n);
 
     foreach (u; 0..n)
       foreach (v; g[u])

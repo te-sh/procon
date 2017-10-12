@@ -1,32 +1,32 @@
-struct Tree
+struct Tree(Node)
 {
   import std.container;
 
-  size_t n;
-  size_t[][] adj;
+  Node n;
+  Node[][] adj;
   int[] size, depth;
-  size_t[] head, parent, path;
-  size_t[][] paths;
+  Node[] head, parent, path;
+  Node[][] paths;
 
-  this(size_t n)
+  this(Node n)
   {
     this.n = n;
-    adj = new size_t[][](n);
+    adj = new Node[][](n);
   }
 
-  auto addEdge(size_t s, size_t t)
+  auto addEdge(Node s, Node t)
   {
     adj[s] ~= t;
     adj[t] ~= s;
   }
 
-  auto rootify(size_t r)
+  auto rootify(Node r)
   {
-    parent = new size_t[](n);
+    parent = new Node[](n);
     depth = new int[](n);
     depth[] = -1;
 
-    struct UP { size_t u, p; }
+    struct UP { Node u, p; }
     auto st1 = SList!UP(UP(r, r));
     auto st2 = SList!UP();
     while (!st1.empty) {
@@ -50,10 +50,10 @@ struct Tree
       size[p] += size[u];
     }
 
-    head = new size_t[](n);
+    head = new Node[](n);
     head[] = n;
 
-    struct US { size_t u, s; }
+    struct US { Node u, s; }
     auto st = SList!US(US(r, r));
 
     while (!st.empty) {
@@ -69,12 +69,12 @@ struct Tree
     }
   }
 
-  auto makePath(size_t r)
+  auto makePath(Node r)
   {
     auto pathIndex = 0;
-    path = new size_t[](n);
+    path = new Node[](n);
 
-    auto q = DList!size_t(r);
+    auto q = DList!Node(r);
 
     while (!q.empty) {
       auto u = q.front; q.removeFront();
@@ -108,7 +108,7 @@ struct Tree
 
 unittest
 {
-  auto tree = Tree(13);
+  auto tree = Tree!size_t(13);
 
   tree.addEdge(0, 1);
   tree.addEdge(0, 2);

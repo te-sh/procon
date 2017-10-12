@@ -66,8 +66,8 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 
     foreach (gi; g)
       foreach (e; gi) {
-        r[e.src] ~= EdgeR(e.src, e.dst, e.cap, 0, r[e.dst].length);
-        r[e.dst] ~= EdgeR(e.dst, e.src, 0, 0, r[e.src].length - 1);
+        r[e.src] ~= EdgeR(e.src, e.dst, e.cap, 0, cast(Node)(r[e.dst].length));
+        r[e.dst] ~= EdgeR(e.dst, e.src, 0, 0, cast(Node)(r[e.src].length) - 1);
       }
 
     return r;
