@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: procon.skelton-math
+# key: skelton-math
+# group: procon
+# --
+import std.math;      // math functions

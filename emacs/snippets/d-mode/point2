@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: procon.point2
+# key: point2
+# group: procon
+# --
+struct Point(T)
+{
+  T x, y;
+  pure auto opBinary(string op: "+")(Point!T rhs) const { return Point!T(x + rhs.x, y + rhs.y); }
+  pure auto opBinary(string op: "-")(Point!T rhs) const { return Point!T(x - rhs.x, y - rhs.y); }
+  pure auto opBinary(string op: "*")(Point!T rhs) const { return x * rhs.x + y * rhs.y; }
+  pure auto opBinary(string op: "*")(T a) const { return Point!T(x * a, y * a); }
+  pure auto opBinary(string op: "/")(T a) const { return Point!T(x / a, y / a); }
+  pure auto hypot2() const { return x ^^ 2 + y ^^ 2; }
+}

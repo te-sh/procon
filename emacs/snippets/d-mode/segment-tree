@@ -1,0 +1,53 @@
+# -*- mode: snippet -*-
+# name: procon.segment-tree
+# key: segment-tree
+# group: procon
+# --
+struct SegmentTree(T, T unit, alias pred = "a + b")
+{
+  import core.bitop, std.functional;
+  alias predFun = binaryFun!pred;
+
+  const size_t n, an;
+  T[] buf;
+
+  this(size_t n)
+  {
+    this.n = n;
+    an = (1 << ((n - 1).bsr + 1));
+    buf = new T[](an * 2);
+    static if (T.init != unit) {
+      buf[] = unit;
+    }
+  }
+
+  this(T[] init)
+  {
+    this(init.length);
+    buf[an..an+n][] = init[];
+    foreach_reverse (i; 1..an)
+      buf[i] = predFun(buf[i*2], buf[i*2+1]);
+  }
+
+  void opIndexAssign(T val, size_t i)
+  {
+    buf[i += an] = val;
+    while (i /= 2)
+      buf[i] = predFun(buf[i * 2], buf[i * 2 + 1]);
+  }
+
+  pure T opSlice(size_t l, size_t r) const
+  {
+    l += an; r += an;
+    T r1 = unit, r2 = unit;
+    while (l != r) {
+      if (l % 2) r1 = predFun(r1, buf[l++]);
+      if (r % 2) r2 = predFun(buf[--r], r2);
+      l /= 2; r /= 2;
+    }
+    return predFun(r1, r2);
+  }
+
+  pure size_t opDollar() { return n; }
+  pure T opIndex(size_t i) { return buf[i + an]; }
+}

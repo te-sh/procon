@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: procon.skelton-container
+# key: skelton-container
+# group: procon
+# --
+import std.container; // SList, DList, BinaryHeap

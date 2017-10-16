@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: procon.skelton-bitmanip
+# key: skelton-bitmanip
+# group: procon
+# --
+import std.bitmanip;  // BitArray

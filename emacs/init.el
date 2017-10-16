@@ -1,3 +1,10 @@
+;; d-mode
+(add-hook 'd-mode-hook
+	  (lambda ()
+	    (disable-indent-tabs-mode)
+	    (setup-flycheck-d-unittest)
+	    (flycheck-dmd-dub-set-variables)))
+
 ;; Copy buffer to submit
 (defun d-copy-for-submit ()
   (interactive)
@@ -5,7 +12,7 @@
     (with-temp-buffer
       (insert-buffer-substring old-buf)
       (goto-char (point-min))
-      (while (re-search-forward "^\\(version(unittest)\\|// path:\\)" nil t)
+      (while (re-search-forward "^\\(version(unittest)\\|// \\(path\\|url\\):\\)" nil t)
 	(let ((start (line-beginning-position)))
 	  (forward-line)
 	  (if (= (point) (line-end-position))
@@ -23,3 +30,9 @@
 		    (forward-line))
 		(delete-region start (point))))))
       (clipboard-kill-ring-save (point-min) (point-max)))))
+
+;; yasnippet
+(require 'yasnippet)
+(setq yas-snippet-dirs (append yas-snippet-dirs
+			       '("~/projects/procon/emacs/snippets")))
+(yas-global-mode 1)
