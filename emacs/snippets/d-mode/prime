@@ -22,12 +22,12 @@ pure T[] primes(T)(T n)
   return r;
 }
 
-pure T factor(T)(T n, const T[] pi)
+pure T factor(T)(T n, const T[] p)
 {
   auto ma = nsqrt(n) + 1;
-  foreach (p; pi)
-    if (p > ma) return n;
-    else if (n % p == 0) return p;
+  foreach (pi; p)
+    if (pi > ma) return n;
+    else if (n % pi == 0) return pi;
   return n;
 }
 

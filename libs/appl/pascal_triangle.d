@@ -40,7 +40,7 @@ unittest
   assert(t1[10][5] == 252);
 
   import factor_ring;
-  alias FactorRing!10 mint;
+  alias mint = FactorRing!10;
   auto t2 = pascalTriangle!mint(10);
   assert(t2[0][0] == 1);
   assert(t2[1][0] == 1);
@@ -61,7 +61,7 @@ unittest
   assert(t1[7][5] == 140);
 
   import factor_ring;
-  alias FactorRing!10 mint;
+  alias mint = FactorRing!10;
   auto t2 = starling2!mint(7);
   assert(t2[0][0] == 1);
   assert(t2[1][0] == 0);

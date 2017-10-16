@@ -21,7 +21,7 @@ unittest
   assert(fibonacchi!(int, int)(20) == 6765);
 
   import factor_ring;
-  alias FactorRing!100 mint;
+  alias mint = FactorRing!100;
   assert(fibonacchi!(mint, int)(15) == 10);
   assert(fibonacchi!(mint, int)(20) == 65);
 }
