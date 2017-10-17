@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: procon.read2
+# key: read2
+# group: procon
+# --
+auto ${1:rd} = readln.split.to!(${2:int}[]), ${3:n} = $1[0], ${4:m} = $1[1];
