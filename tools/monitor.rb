@@ -8,8 +8,12 @@ ROOT = File.absolute_path(File.join(__dir__, '..'))
 
 # Tester with online-judge-tool
 class OjTester
-  DIRS = %w[abc arc yukicoder].freeze
-  DENVS = { 'abc' => 'dmd-2.070.1', 'arc' => 'dmd-2.070.1', 'yukicoder' => 'dmd-2.076.0' }.freeze
+  DENVS = {
+    'abc' => 'dmd-2.070.1',
+    'arc' => 'dmd-2.070.1',
+    'yukicoder' => 'dmd-2.076.0'
+  }.freeze
+  DIRS = DENVS.keys
 
   def listen
     dirs = DIRS.map { |dir| File.join(ROOT, dir) }
@@ -36,14 +40,7 @@ class OjTester
   end
 
   def download_test(file, site, tokens)
-    url = case site
-          when 'abc'
-            abc_url(file, tokens)
-          when 'arc'
-            arc_url(file, tokens)
-          when 'yukicoder'
-            yukicoder_url(file, tokens)
-          end
+    url = get_url(file, site, tokens)
     puts "url: #{url}"
     return if @prev_url == url
     FileUtils.rm_r('test') if File.exist?('test')
@@ -51,65 +48,73 @@ class OjTester
     @prev_url = url
   end
 
-  def abc_url(file, tokens)
-    opts = atcoder_opts(file)
-    problem = File.basename(tokens[1], '.d')
-    path = if opts[:path]
-             opts[:path]
-           else
-             format 'abc%s_%s',
-                    tokens[0],
-                    tokens[0] <= '019' ? problem.tr('a-d', '1-4') : problem
-           end
-    format 'http://abc%s.contest.atcoder.jp/tasks/%s',
-           tokens[0],
-           path
+  def get_url(file, site, tokens)
+    opts = get_opts(file)
+    return opts[:url] if opts.key?(:url)
+    case site
+    when 'abc'
+      abc_url(tokens, opts)
+    when 'arc'
+      arc_url(tokens, opts)
+    when 'yukicoder'
+      yukicoder_url(tokens, opts)
+    end
   end
 
-  def arc_url(file, tokens)
-    opts = atcoder_opts(file)
-    problem = File.basename(tokens[1], '.d')
-    path = if opts[:path]
-             opts[:path]
-           else
-             format 'arc%s_%s',
-                    tokens[0],
-                    tokens[0] <= '019' ? problem.tr('a-d', '1-4') : problem
-           end
-    format 'http://arc%s.contest.atcoder.jp/tasks/%s',
-           tokens[0],
-           path
-  end
-
-  def atcoder_opts(file)
+  def get_opts(file)
     opts = {}
     IO.foreach(file) do |line|
-      if line =~ %r(// path: (.*))
+      if line =~ %r{// url: (.*)}
+        opts[:url] = Regexp.last_match[1]
+      elsif line =~ %r{// path: (.*)}
         opts[:path] = Regexp.last_match[1]
       end
     end
     opts
   end
 
-  def yukicoder_url(_file, tokens)
-    format 'https://yukicoder.me/problems/no/%d',
-           File.basename(tokens[1], '.d')[1..-1].to_i
+  def abc_url(tokens, opts)
+    num = tokens[0]
+    problem = File.basename(tokens[1], '.d')
+    problem_c = num <= '019' ? problem.tr('a-d', '1-4') : problem
+    path = if opts[:path]
+             opts[:path]
+           else
+             format 'abc%s_%s', num, problem_c
+           end
+    format 'http://abc%s.contest.atcoder.jp/tasks/%s', num, path
   end
 
-  def yukicoder_url(_file, tokens)
-    format 'https://yukicoder.me/problems/no/%d',
-           File.basename(tokens[1], '.d')[1..-1].to_i
+  def arc_url(tokens, opts)
+    num = tokens[0]
+    problem = File.basename(tokens[1], '.d')
+    problem_c = num <= '019' ? problem.tr('a-d', '1-4') : problem
+    path = if opts[:path]
+             opts[:path]
+           else
+             format 'arc%s_%s', num, problem_c
+           end
+    format 'http://arc%s.contest.atcoder.jp/tasks/%s', num, path
+  end
+
+  def yukicoder_url(tokens, _opts)
+    num = File.basename(tokens[1], '.d')[1..-1].to_i
+    format 'https://yukicoder.me/problems/no/%d', num
   end
 
   def compile(site, file)
-    options = case site
-              when 'abc'
-                '-m64 -w -O -release -inline'
-              when 'yukicoder'
-                '-m64 -w -wi -O -release -inline'
-              end
+    options = d_options(site)
+    set_denv = "denv local #{DENVS[site]}"
+    system "#{set_denv}; dmd --version; dmd -ofa.out #{options} #{file}"
+  end
 
-    system "denv local #{DENVS[site]}; dmd --version; dmd -ofa.out #{options} #{file}"
+  def d_options(site)
+    case site
+    when 'abc', 'arc'
+      '-m64 -w -O -release -inline'
+    when 'yukicoder'
+      '-m64 -w -wi -O -release -inline'
+    end
   end
 
   def test
