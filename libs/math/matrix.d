@@ -22,8 +22,32 @@ T[] matMulVec(T)(const T[][] a, const T[] b)
   return c;
 }
 
+T matDet(T)(const T[][] a)
+{
+  import std.algorithm, std.math;
+
+  auto n = a.length, b = new T[][](n), d = T(1);
+  foreach (i; 0..n) b[i] = a[i].dup;
+
+  foreach (i; 0..n) {
+    auto p = i;
+    foreach (j; i+1..n)
+      if (b[p][i].abs < b[j][i].abs) p = j;
+    swap(b[p], b[i]);
+    foreach (j; i+1..n)
+      foreach (k; i+1..n)
+        b[j][k] -= b[i][k] * b[j][i] / b[i][i];
+    d *= b[i][i];
+    if (p != i) d = -d;
+  }
+
+  return d;
+}
+
 unittest
 {
+  import std.math;
+
   auto a = new int[][](2, 2);
   a = [[5, 2], [3, 1]];
 
@@ -42,4 +66,9 @@ unittest
 
   assert(e[0] == 9);
   assert(e[1] == 5);
+
+  auto f = new real[][](3, 3);
+  f = [[3, 4, -1], [2, 5, -2], [1, 6, -4]];
+  auto g = matDet(f);
+  assert((g + 7).abs < 1e-7L);
 }

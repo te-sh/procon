@@ -1,25 +1,25 @@
-struct UnionFind
+struct UnionFind(T)
 {
   import std.algorithm, std.range;
 
-  size_t[] p; // parent
-  const size_t s; // sentinel
-  const size_t n;
-  size_t countForests; // number of forests
-  size_t[] countNodes; // number of nodes in forests
+  T[] p; // parent
+  const T s; // sentinel
+  const T n;
+  T countForests; // number of forests
+  T[] countNodes; // number of nodes in forests
 
-  this(size_t n)
+  this(T n)
   {
     this.n = n;
     s = n;
-    p = new size_t[](n);
+    p = new T[](n);
     p[] = s;
     countForests = n;
-    countNodes = new size_t[](n);
+    countNodes = new T[](n);
     countNodes[] = 1;
   }
 
-  size_t opIndex(size_t i)
+  T opIndex(T i)
   {
     if (p[i] == s) {
       return i;
@@ -29,7 +29,7 @@ struct UnionFind
     }
   }
 
-  bool unite(size_t i, size_t j)
+  bool unite(T i, T j)
   {
     auto pi = this[i], pj = this[j];
     if (pi != pj) {
@@ -42,12 +42,12 @@ struct UnionFind
     }
   }
 
-  auto countNodesOf(size_t i) { return countNodes[this[i]]; }
-  bool isSame(size_t i, size_t j) { return this[i] == this[j]; }
+  auto countNodesOf(T i) { return countNodes[this[i]]; }
+  bool isSame(T i, T j) { return this[i] == this[j]; }
 
   auto groups()
   {
-    auto g = new size_t[][](n);
+    auto g = new T[][](n);
     foreach (i; 0..n) g[this[i]] ~= i;
     return g.filter!(l => !l.empty);
   }
@@ -57,7 +57,7 @@ unittest
 {
   import std.range;
 
-  auto uf = UnionFind(6);
+  auto uf = UnionFind!size_t(6);
 
   assert(uf.countForests == 6);
   foreach (i; 0..6)
