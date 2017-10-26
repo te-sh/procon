@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: procon.skelton-numeric
+# key: skelton-numeric
+# group: procon
+# --
+import std.numeric;   // gcd, fft
