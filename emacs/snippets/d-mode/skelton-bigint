@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: procon.skelton-bigint
+# key: skelton-bigint
+# group: procon
+# --
+import std.bigint;    // BigInt
