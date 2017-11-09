@@ -1,9 +1,9 @@
-T repeatedSquare(T, alias pred = "a * b", U)(T a, U n)
+pure T repeatedSquare(T, alias pred = "a * b", U)(T a, U n)
 {
   return repeatedSquare(a, n, T(1));
 }
 
-T repeatedSquare(T, alias pred = "a * b", U)(T a, U n, T init)
+pure T repeatedSquare(T, alias pred = "a * b", U)(T a, U n, T init)
 {
   import std.functional;
   alias predFun = binaryFun!pred;

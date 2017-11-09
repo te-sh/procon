@@ -6,6 +6,8 @@ struct FactorRing(int m, bool pos = false)
     union { long vl; int vi; }
   }
 
+  static init() { return FactorRing!(m, pos)(0); }
+
   @property int toInt() { return vi; }
   alias toInt this;
 

@@ -1,24 +1,26 @@
-struct SegmentTree(T, T unit, alias pred = "a + b")
+struct SegmentTree(T, alias pred = "a + b")
 {
   import core.bitop, std.functional;
   alias predFun = binaryFun!pred;
 
   const size_t n, an;
   T[] buf;
+  T unit;
 
-  this(size_t n)
+  this(size_t n, T unit = T.init)
   {
     this.n = n;
+    this.unit = unit;
     an = (1 << ((n - 1).bsr + 1));
     buf = new T[](an * 2);
-    static if (T.init != unit) {
+    if (T.init != unit) {
       buf[] = unit;
     }
   }
 
-  this(T[] init)
+  this(T[] init, T unit = T.init)
   {
-    this(init.length);
+    this(init.length, unit);
     buf[an..an+n][] = init[];
     foreach_reverse (i; 1..an)
       buf[i] = predFun(buf[i*2], buf[i*2+1]);
@@ -31,7 +33,7 @@ struct SegmentTree(T, T unit, alias pred = "a + b")
       buf[i] = predFun(buf[i * 2], buf[i * 2 + 1]);
   }
 
-  pure T opSlice(size_t l, size_t r) const
+  pure T opSlice(size_t l, size_t r)
   {
     l += an; r += an;
     T r1 = unit, r2 = unit;
@@ -51,7 +53,7 @@ unittest
 {
   import std.algorithm;
 
-  auto st1 = SegmentTree!(int, 0, "a + b")(6);
+  auto st1 = SegmentTree!(int, "a + b")(6);
   st1[0] = 1;
   st1[2] = 2;
   st1[5] = 5;
@@ -67,7 +69,7 @@ unittest
   assert(st1[0..3] == 4);
   assert(st1[2..$] == 8);
 
-  auto st2 = SegmentTree!(int, int.max, min)(10);
+  auto st2 = SegmentTree!(int, min)(10, int.max);
   st2[0] = 8;
   st2[2] = 4;
   st2[5] = 5;
@@ -80,7 +82,7 @@ unittest
   assert(st2[0..3] == 8);
   assert(st2[2..$] == 5);
 
-  auto st3 = SegmentTree!(int, 0)([1,2,3,4,5,6,7,8,9,10]);
+  auto st3 = SegmentTree!(int)([1,2,3,4,5,6,7,8,9,10]);
   assert(st3[0..0] == 0);
   assert(st3[0..1] == 1);
   assert(st3[0..2] == 3);

@@ -1,4 +1,4 @@
-struct SegmentTreeLazy(T, T unit, alias pred = "a + b")
+struct SegmentTreeLazy(T, alias pred = "a + b")
 {
   import core.bitop, std.conv, std.functional, std.range;
   alias predFun = binaryFun!pred;
@@ -7,15 +7,17 @@ struct SegmentTreeLazy(T, T unit, alias pred = "a + b")
   const size_t n, an;
   T[] buf, laz;
   Op[] op;
+  T unit;
 
-  this(size_t n)
+  this(size_t n, T unit = T.init)
   {
     this.n = n;
+    this.unit = unit;
     an = (1 << ((n - 1).bsr + 1));
     buf = new T[](an * 2);
     laz = new T[](an * 2);
     op = new Op[](an * 2);
-    static if (T.init != unit) {
+    if (T.init != unit) {
       buf[] = unit;
     }
   }
@@ -104,7 +106,7 @@ unittest
 {
   import std.algorithm;
 
-  auto st1 = SegmentTreeLazy!(int, 0, "a + b")(7);
+  auto st1 = SegmentTreeLazy!(int, "a + b")(7);
   st1[0..5] = 1;
   st1[2..7] = 2;
   assert(st1[0..0] == 0);
