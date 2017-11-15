@@ -1,3 +1,51 @@
+import std.algorithm, std.conv, std.range, std.stdio, std.string;
+import std.typecons;  // Tuple, Nullable, BigFlags
+
+alias graph = Graph!(long, int, 10L^^18);
+alias edge = graph.Edge;
+const ofs = 10L^^6;
+
+version(unittest) {} else
+void main()
+{
+  auto rd = readln.split.to!(int[]), n = rd[0], m = rd[1];
+  auto s = readln.split.to!(long[]), ss = s.sum*ofs;
+  auto t = readln.split.to!(long[]);
+  auto a = new int[][](n);
+  foreach (i; 0..n) {
+    auto rd2 = readln.splitter;
+    auto k = rd2.front.to!int; rd2.popFront();
+    a[i] = new int[](k);
+    foreach (j; 0..k) {
+      a[i][j] = rd2.front.to!int-1;
+      rd2.popFront();
+    }
+  }
+
+  auto g = new edge[][](n+m+2), gs = n+m, gt = n+m+1;
+
+  foreach (i; 0..n)
+    g[i] ~= edge(i, gt, s[i]*ofs);
+
+  foreach (i; 0..n)
+    foreach (j; a[i])
+      g[n+j] ~= edge(n+j, i, 10L^^18);
+
+  auto calc(long x)
+  {
+    g[gs] = [];
+    foreach (j; 0..m)
+      g[gs] ~= edge(gs, n+j, t[j]*x);
+
+    auto f = graph.dinic(g, gs, gt);
+    return f >= ss;
+  }
+
+  auto ma = 10000L*ofs;
+  auto bsearch = iota(ma+1).map!(x => tuple(x, calc(x))).assumeSorted!"a[1] < b[1]";
+  writefln("%.7f", bsearch.upperBound(tuple(0, false)).front[0].to!real/ofs);
+}
+
 template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 {
   import std.algorithm, std.container, std.conv;
@@ -72,19 +120,4 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 
     return r;
   }
-}
-
-unittest
-{
-  alias graph = Graph!(int, size_t);
-  alias Edge = graph.Edge;
-
-  auto g = new Edge[][](5);
-  g[0] = [Edge(0, 1, 5), Edge(0, 2, 2), Edge(0, 3, 8)];
-  g[1] = [Edge(1, 2, 3), Edge(1, 4, 4)];
-  g[2] = [Edge(2, 3, 4), Edge(2, 4, 4)];
-  g[3] = [Edge(3, 4, 6)];
-
-  auto d = graph.dinic(g, 0, 4);
-  assert(d == 13);
 }

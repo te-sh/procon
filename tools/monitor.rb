@@ -88,7 +88,7 @@ class OjTester
   def arc_url(tokens, opts)
     num = tokens[0]
     problem = File.basename(tokens[1], '.d')
-    problem_c = num <= '030' ? problem.tr('a-d', '1-4') : problem
+    problem_c = num <= '040' ? problem.tr('a-d', '1-4') : problem
     path = if opts[:path]
              opts[:path]
            else
