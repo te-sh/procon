@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: procon.skelton-typecons
+# key: skelton-typecons
+# group: procon
+# --
+import std.typecons;  // Tuple, Nullable, BigFlags
