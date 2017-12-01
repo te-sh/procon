@@ -27,3 +27,25 @@ subtitle: yukicoder
   {% endfor %}
 </table>
 {% endfor %}
+
+{% for a in (12..12) %}
+{% assign offset = a | times: 50 %}
+<h3>No.{{ offset | plus: 1 }} - No.{{ offset | plus: 50 }}</h3>
+<table class="table table-bordered">
+  {% for i in (1..5) %}
+  <tr>
+    {% for j in (1..10) %}
+    {% assign number = i | minus: 1 | times: 10 | plus: j | plus: offset %}
+    {% assign doc = coll.docs | where: "number", number | first %}
+    <td class="text-center col-md-1">
+      {% if doc %}
+      <a href="{{ site.baseurl }}{{ doc.url }}">No.{{ number }}</a>
+      {% else %}
+      <span class="text-muted">No.{{ number }}</span>
+      {% endif %}
+    </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+{% endfor %}
