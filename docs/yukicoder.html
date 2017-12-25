@@ -6,7 +6,7 @@ subtitle: yukicoder
 
 {% assign coll = site.collections | where: "label", "yukicoder" | first %}
 
-{% for a in (0..9) %}
+{% for a in (0..10) %}
 {% assign offset = a | times: 50 %}
 <h3>No.{{ offset | plus: 1 }} - No.{{ offset | plus: 50 }}</h3>
 <table class="table table-bordered">

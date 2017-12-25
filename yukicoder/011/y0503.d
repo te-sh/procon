@@ -1,34 +1,41 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
-import std.bitmanip;  // BitArray
-import std.base64;
-import std.regex;
 
-const p = 10 ^^ 9 + 7;
-alias mint = FactorRing!p;
+const mod = 10^^9+7;
+alias mint = FactorRing!mod;
 
 version(unittest) {} else
 void main()
 {
-  auto buffer = new ubyte[](int.sizeof * 5000);
-  size_t index = 0;
+  auto rd = readln.split.to!(int[]), n = rd[0], k = rd[1], d = rd[2];
 
-  auto f = mint(1);
-  foreach (i; 1..10^^9+1) {
-    f = f * i;
-    if (i % 200000 == 0) {
-      buffer.write!int(f.toInt, &index);
+  auto s = n/(k-1) - (n%(k-1) == 0 || n%(k-1) == 1);
+  auto t = n-s*(k-1);
+
+  if (d == 1) {
+    writeln(t);
+    return;
+  }
+
+  auto dp1 = new mint[][](t+1, s+1), dp2 = new mint[][](t+1, s+1),
+       dp3 = new mint[][](t+1, s+1), dp4 = new mint[][](t+1, s+1);
+  dp1[0][0] = 1;
+  dp2[0][0] = 1;
+
+  foreach (i; 1..t+1) {
+    dp1[i][0] = 1;
+    dp2[i][0] = 1;
+    dp3[i][0] = dp4[i-1][0];
+    dp4[i][0] = dp4[i-1][0]+1;
+
+    foreach (j; 1..s+1) {
+      dp1[i][j] = dp1[i-1][j] + dp1[i][j-1];
+      dp2[i][j] = dp1[i-1][j] + dp2[i][j-1]*d;
+      dp3[i][j] = dp4[i-1][j] + dp3[i][j-1];
+      dp4[i][j] = dp2[i][j] + dp3[i][j];
     }
   }
 
-  auto str = Base64.encode(buffer);
-  str = str.replaceAll(regex(r"(.{128})", "g"), "$1\n");
-  writeln(str);
-
-  auto buffer2 = Base64.decode(str.replaceAll(regex(r"\n", "g"), ""));
-  auto factTable = new int[](5000);
-  size_t index2 = 0;
-  foreach (i; 0..100)
-    factTable[i] = buffer2.peek!int(&index2);
+  writeln(dp4[t][s]);
 }
 
 struct FactorRing(int m, bool pos = false)
