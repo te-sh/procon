@@ -30,13 +30,14 @@ void main()
     auto z = rd2.front.to!int;
     d[x][y] = d[y][x] = min(d[x][y], z);
 
-    auto r = 0;
-    
     foreach (i; 0..n)
-      foreach (j; 0..n) {
-        d[i][j] = min(d[i][j], d[i][x] + d[j][y] + z, d[i][y] + d[j][x] + z);
-        if (i < j) r += d[i][j];
-      }
+      foreach (j; 0..n)
+        d[i][j] = min(d[i][j], d[i][x] + d[j][y] + d[x][y], d[i][y] + d[j][x] + d[x][y]);
+
+    auto r = 0L;
+    foreach (i; 0..n)
+      foreach (j; i+1..n)
+        r += d[i][j];
 
     writeln(r);
   }
