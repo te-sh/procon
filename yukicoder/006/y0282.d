@@ -4,6 +4,12 @@ version(unittest) {} else
 void main()
 {
   auto n = readln.chomp.to!int;
+
+  if (n == 1) {
+    writeln("! 1");
+    return;
+  }
+
   auto q = (n - 1).bsr + 1, p = (1 << q), r = 0;
 
   auto gi = new int[][](n, n);
