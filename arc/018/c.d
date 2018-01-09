@@ -7,6 +7,15 @@ void main()
   auto rd1 = readln.split.to!(int[]), n = rd1[0], m = rd1[1];
   auto rd2 = readln.split.to!(int[]), x0 = rd2[0], a = rd2[1], p = rd2[2];
 
+  if (a % p == 0) {
+    if (x0 > p)
+      writeln((n-1)*2);
+    else
+      writeln(0);
+
+    return;
+  }
+
   struct XI { int x, i; }
   auto xi = new XI[](n*m);
   xi[0] = XI(x0, 0);
