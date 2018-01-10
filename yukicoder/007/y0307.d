@@ -13,7 +13,11 @@ void main()
 
   auto q = readln.chomp.to!size_t, sameColor = false, lastColor = 0;
   foreach (_; 0..q) {
-    auto rd2 = readln.split.to!(int[]), p = point(rd2[1]-1, rd2[0]-1), x = rd2[2];
+    auto rd2 = readln.splitter;
+    auto r = rd2.front.to!int-1; rd2.popFront();
+    auto c = rd2.front.to!int-1; rd2.popFront();
+    auto x = rd2.front.to!int;
+    auto p = point(c, r);
 
     if (sameColor) {
       lastColor = x;
