@@ -3,4 +3,4 @@
 # key: read2
 # group: procon
 # --
-auto ${1:rd} = readln.split.to!(${2:int}[]), ${3:n} = $1[0], ${4:m} = $1[1];
+void read2(S,T)(ref S a,ref T b){auto r=readln.splitter;a=r.front.to!S;r.popFront;b=r.front.to!T;}

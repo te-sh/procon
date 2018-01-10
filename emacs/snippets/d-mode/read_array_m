@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: procon.read_array_m
+# key: readArrayM
+# group: procon
+# --
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref ai; a)ai=readln.chomp.to!T;return a;}

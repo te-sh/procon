@@ -1,18 +1,21 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 import std.bitmanip;  // BitArray
 
+void read3(S,T,U)(ref S a,ref T b,ref U c){auto r=readln.splitter;a=r.front.to!S;r.popFront;b=r.front.to!T;r.popFront;c=r.front.to!U;}
+void read4(S,T,U,V)(ref S a,ref T b,ref U c,ref V d){auto r=readln.splitter;a=r.front.to!S;r.popFront;b=r.front.to!T;r.popFront;c=r.front.to!U;r.popFront;d=r.front.to!V;r.popFront;}
+
 const mod = 10^^9+7;
 
 version(unittest) {} else
 void main()
 {
-  auto rd = readln.split.to!(int[]), h = rd[0], w = rd[1], k = rd[2], p = rd[3];
+  int h, w, k, p; read4(h, w, k, p);
 
   struct Friend { int x, y; string name; }
   auto f = new Friend[](k);
   foreach (i; 0..k) {
-    auto rd2 = readln.split;
-    f[i] = Friend(rd2[0].to!int, rd2[1].to!int, rd2[2]);
+    int x, y; string name; read3(x, y, name);
+    f[i] = Friend(x, y, name);
   }
 
   auto maxR = 0L, maxI = 0;

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: procon.read_array
+# key: readArray
+# group: procon
+# --
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref ai;a){ai=r.front.to!T;r.popFront;}return a;}

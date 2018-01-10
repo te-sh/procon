@@ -4,8 +4,8 @@ import std.math;      // math functions
 version(unittest) {} else
 void main()
 {
-  auto n = readln.chomp.to!int;
-  auto y = readln.split.to!(int[]);
+  auto n = read1!int;
+  auto y = readArray!int(n);
   y.sort();
 
   auto m = n&1 ? y[n/2] : (y[n/2-1]+y[n/2])/2;
@@ -14,3 +14,6 @@ void main()
 
   writeln(ans);
 }
+
+T read1(T)(){return readln.chomp.to!T;}
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref ai;a){ai=r.front.to!T;r.popFront;}return a;}

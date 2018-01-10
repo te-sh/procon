@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: procon.read4
+# key: read4
+# group: procon
+# --
+void read4(S,T,U,V)(ref S a,ref T b,ref U c,ref V d){auto r=readln.splitter;a=r.front.to!S;r.popFront;b=r.front.to!T;r.popFront;c=r.front.to!U;r.popFront;d=r.front.to!V;r.popFront;}

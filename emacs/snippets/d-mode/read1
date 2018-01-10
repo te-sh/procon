@@ -3,4 +3,4 @@
 # key: read1
 # group: procon
 # --
-auto ${1:n} = readln.chomp.to!${2:int};
+T read1(T)(){return readln.chomp.to!T;}
