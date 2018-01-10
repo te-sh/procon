@@ -1,22 +1,23 @@
-template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 {
   const inf = _inf, sent = _sent;
 
-  struct Edge
-  {
-    Node src, dst;
-    Wt wt;
-  }
+  struct Edge { Node src, dst; Wt wt; }
 
-  Wt[] bellmanFord(Edge[][] g, Node s)
+  Edge[][] g;
+
+  this(size_t n) { g = new Edge[][](n); }
+  auto addEdge(Node src, Node dst, Wt wt) { g[src] ~= Edge(src, dst, wt); }
+
+  Wt[] bellmanFord(Node s)
   {
     Wt[] dist;
     Node[] prev;
-    bellmanFord(g, s, dist, prev);
+    bellmanFord(s, dist, prev);
     return dist;
   }
 
-  void bellmanFord(Edge[][] g, Node s, out Wt[] dist, out Node[] prev)
+  void bellmanFord(Node s, out Wt[] dist, out Node[] prev)
   {
     auto n = g.length;
 
@@ -40,23 +41,19 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 
 unittest
 {
-  alias graph = Graph!(int, size_t);
-  alias Edge = graph.Edge;
+  auto g = Graph!int(9);
+  g.addEdge(0, 1, 5); g.addEdge(0, 2, 4);
+  g.addEdge(1, 2, -2); g.addEdge(1, 3, 1);
+  g.addEdge(2, 4, 1); g.addEdge(2, 5, 4);
+  g.addEdge(3, 5, 3); g.addEdge(3, 6, -1);
+  g.addEdge(4, 5, 4);
+  g.addEdge(6, 7, -1);
+  g.addEdge(7, 8, -1);
+  g.addEdge(8, 6, -1);
 
-  auto g = new Edge[][](9);
-  g[0] = [Edge(0, 1, 5), Edge(0, 2, 4)];
-  g[1] = [Edge(1, 2, -2), Edge(1, 3, 1)];
-  g[2] = [Edge(2, 4, 1), Edge(2, 5, 4)];
-  g[3] = [Edge(3, 5, 3), Edge(3, 6, -1)];
-  g[4] = [Edge(4, 5, 4)];
-  g[5] = [];
-  g[6] = [Edge(6, 7, -1)];
-  g[7] = [Edge(7, 8, -1)];
-  g[8] = [Edge(8, 6, -1)];
-
-  auto dist = graph.bellmanFord(g, 0);
+  auto dist = g.bellmanFord(0);
   assert(dist[1] == 5);
   assert(dist[2] == 3);
   assert(dist[5] == 7);
-  assert(dist[6] <= -graph.inf);
+  assert(dist[6] <= -g.inf);
 }

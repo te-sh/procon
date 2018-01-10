@@ -1,9 +1,6 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 import std.math;      // math functions
 
-alias graph = Graph!(long, int, 10L^^18);
-alias edge = graph.Edge;
-
 version(unittest) {} else
 void main()
 {
@@ -34,47 +31,47 @@ void main()
     foreach (rij; ri)
       h[i][rij] = cnt++;
 
-  auto g = new edge[][](cnt);
+  auto g = Graph!(long, int, 10L^^18)(cnt);
 
   foreach (i, ri; r)
     if (ri.length >= 2)
       foreach (j; 0..ri.length-1) {
         auto u = h[i][ri[j]], v = h[i][ri[j+1]], w = ri[j+1]-ri[j];
-        g[u] ~= edge(u, v, w);
-        g[v] ~= edge(v, u, w);
+        g.addEdgeB(u, v, w);
       }
 
   foreach (rouka; roukas) {
     auto u = h[rouka.a][rouka.b], v = h[rouka.a+1][rouka.c];
-    g[u] ~= edge(u, v, 0);
+    g.addEdge(u, v, 0);
   }
 
-  auto dist = graph.dijkstra(g, h[0][s])[h[$-1][t]];
+  auto dist = g.dijkstra(h[0][s])[h[$-1][t]];
 
-  writeln(dist == graph.inf ? -1 : dist);
+  writeln(dist == g.inf ? -1 : dist);
 }
 
-template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+struct Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 {
   import std.container;
 
   const inf = _inf, sent = _sent;
 
-  struct Edge
-  {
-    Node src, dst;
-    Wt wt;
-  }
+  struct Edge { Node src, dst; Wt wt; }
+  Edge[][] g;
 
-  Wt[] dijkstra(Edge[][] g, Node s)
+  this(size_t n) { g = new Edge[][](n); }
+  void addEdge(Node src, Node dst, Wt wt) { g[src] ~= Edge(src, dst, wt); }
+  void addEdgeB(Node src, Node dst, Wt wt) { g[src] ~= Edge(src, dst, wt); g[dst] ~= Edge(dst, src, wt); }
+
+  Wt[] dijkstra(Node s)
   {
     Wt[] dist;
     Node[] prev;
-    dijkstra(g, s, dist, prev);
+    dijkstra(s, dist, prev);
     return dist;
   }
 
-  void dijkstra(Edge[][] g, Node s, out Wt[] dist, out Node[] prev)
+  void dijkstra(Node s, out Wt[] dist, out Node[] prev)
   {
     auto n = g.length;
 

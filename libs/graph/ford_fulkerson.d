@@ -1,4 +1,4 @@
-template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 {
   import std.algorithm, std.container, std.conv;
 
@@ -7,10 +7,15 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
   struct Edge { Node src, dst; Wt cap; }
   struct EdgeR { Node src, dst; Wt cap, flow; Node rev; }
 
-  Wt fordFulkerson(Edge[][] g, Node s, Node t)
+  Edge[][] g;
+
+  this(size_t n) { g = new Edge[][](n); }
+  auto addEdge(Node src, Node dst, Wt cap) { g[src] ~= Edge(src, dst, cap); }
+
+  Wt fordFulkerson(Node s, Node t)
   {
     auto n = g.length;
-    auto adj = withRev(g, n);
+    auto adj = withRev(n);
 
     auto visited = new bool[](n);
 
@@ -43,7 +48,7 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
     return flow;
   }
 
-  EdgeR[][] withRev(Edge[][] g, size_t n)
+  EdgeR[][] withRev(size_t n)
   {
     auto r = new EdgeR[][](n);
 
@@ -59,15 +64,12 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 
 unittest
 {
-  alias graph = Graph!(int, size_t);
-  alias Edge = graph.Edge;
+  auto g = Graph!int(5);
+  g.addEdge(0, 1, 5); g.addEdge(0, 2, 2); g.addEdge(0, 3, 8);
+  g.addEdge(1, 2, 3); g.addEdge(1, 4, 4);
+  g.addEdge(2, 3, 4); g.addEdge(2, 4, 4);
+  g.addEdge(3, 4, 6);
 
-  auto g = new Edge[][](5);
-  g[0] = [Edge(0, 1, 5), Edge(0, 2, 2), Edge(0, 3, 8)];
-  g[1] = [Edge(1, 2, 3), Edge(1, 4, 4)];
-  g[2] = [Edge(2, 3, 4), Edge(2, 4, 4)];
-  g[3] = [Edge(3, 4, 6)];
-
-  auto d = graph.fordFulkerson(g, 0, 4);
+  auto d = g.fordFulkerson(0, 4);
   assert(d == 13);
 }

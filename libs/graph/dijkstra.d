@@ -1,24 +1,25 @@
-template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 {
   import std.container;
 
   const inf = _inf, sent = _sent;
 
-  struct Edge
-  {
-    Node src, dst;
-    Wt wt;
-  }
+  struct Edge { Node src, dst; Wt wt; }
+  Edge[][] g;
 
-  Wt[] dijkstra(Edge[][] g, Node s)
+  this(size_t n) { g = new Edge[][](n); }
+  void addEdge(Node src, Node dst, Wt wt) { g[src] ~= Edge(src, dst, wt); }
+  void addEdgeB(Node src, Node dst, Wt wt) { g[src] ~= Edge(src, dst, wt); g[dst] ~= Edge(dst, src, wt); }
+
+  Wt[] dijkstra(Node s)
   {
     Wt[] dist;
     Node[] prev;
-    dijkstra(g, s, dist, prev);
+    dijkstra(s, dist, prev);
     return dist;
   }
 
-  void dijkstra(Edge[][] g, Node s, out Wt[] dist, out Node[] prev)
+  void dijkstra(Node s, out Wt[] dist, out Node[] prev)
   {
     auto n = g.length;
 
@@ -47,18 +48,15 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 
 unittest
 {
-  alias graph = Graph!(int, size_t);
-  alias Edge = graph.Edge;
+  auto g = Graph!(int)(6);
+  g.addEdge(0, 1, 5); g.addEdge(0, 2, 4); g.addEdge(0, 3, 2);
+  g.addEdge(1, 0, 5); g.addEdge(1, 2, 2); g.addEdge(1, 4, 6);
+  g.addEdge(2, 0, 4); g.addEdge(2, 1, 2); g.addEdge(2, 3, 3); g.addEdge(2, 5, 2);
+  g.addEdge(3, 0, 2); g.addEdge(3, 5, 6);
+  g.addEdge(4, 1, 6); g.addEdge(4, 5, 4);
+  g.addEdge(5, 2, 2); g.addEdge(5, 3, 6); g.addEdge(5, 4, 4);
 
-  auto g = new Edge[][](6);
-  g[0] = [Edge(0, 1, 5), Edge(0, 2, 4), Edge(0, 3, 2)];
-  g[1] = [Edge(1, 0, 5), Edge(1, 2, 2), Edge(1, 4, 6)];
-  g[2] = [Edge(2, 0, 4), Edge(2, 1, 2), Edge(2, 3, 3), Edge(2, 5, 2)];
-  g[3] = [Edge(3, 0, 2), Edge(3, 5, 6)];
-  g[4] = [Edge(4, 1, 6), Edge(4, 5, 4)];
-  g[5] = [Edge(5, 2, 2), Edge(5, 3, 6), Edge(5, 4, 4)];
-
-  auto dist = graph.dijkstra(g, 0);
+  auto dist = g.dijkstra(0);
 
   assert(dist[4] == 10);
   assert(dist[5] == 6);
