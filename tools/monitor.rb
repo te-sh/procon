@@ -11,7 +11,7 @@ class OjTester
   DENVS = {
     'abc' => 'dmd-2.070.1',
     'arc' => 'dmd-2.070.1',
-    'yukicoder' => 'dmd-2.076.0'
+    'yukicoder' => 'dmd-2.077.1'
   }.freeze
   DIRS = DENVS.keys
 
