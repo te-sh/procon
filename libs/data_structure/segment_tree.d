@@ -11,11 +11,9 @@ struct SegmentTree(T, alias pred = "a + b")
   {
     this.n = n;
     this.unit = unit;
-    an = (1 << ((n - 1).bsr + 1));
-    buf = new T[](an * 2);
-    if (T.init != unit) {
-      buf[] = unit;
-    }
+    an = (1 << ((n-1).bsr + 1));
+    buf = new T[](an*2);
+    if (T.init != unit) buf[] = unit;
   }
 
   this(T[] init, T unit = T.init)
@@ -30,7 +28,7 @@ struct SegmentTree(T, alias pred = "a + b")
   {
     buf[i += an] = val;
     while (i /= 2)
-      buf[i] = predFun(buf[i * 2], buf[i * 2 + 1]);
+      buf[i] = predFun(buf[i*2], buf[i*2+1]);
   }
 
   pure T opSlice(size_t l, size_t r)
@@ -45,8 +43,8 @@ struct SegmentTree(T, alias pred = "a + b")
     return predFun(r1, r2);
   }
 
+  pure T opIndex(size_t i) { return buf[i+an]; }
   pure size_t opDollar() { return n; }
-  pure T opIndex(size_t i) { return buf[i + an]; }
 }
 
 unittest

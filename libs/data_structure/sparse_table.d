@@ -13,32 +13,31 @@ struct SparseTable(T, alias pred = "a < b ? a : b")
     this.a = a;
     this.n = a.length;
 
-    logTable = new size_t[n + 1];
+    logTable = new size_t[n+1];
     foreach (i; 2..n+1)
-      logTable[i] = logTable[i >> 1] + 1;
+      logTable[i] = logTable[i>>1]+1;
 
-    rmq = new size_t[][](logTable[n] + 1, n);
+    rmq = new size_t[][](logTable[n]+1, n);
 
-    foreach (i; 0..n)
-      rmq[0][i] = i;
+    foreach (i; 0..n) rmq[0][i] = i;
 
-    for (size_t k = 1; (1 << k) < n; ++k)
-      for (size_t i = 0; i + (1 << k) <= n; ++i) {
-        auto x = rmq[k - 1][i];
-        auto y = rmq[k - 1][i + (1 << k - 1)];
+    for (size_t k = 1; (1<<k) < n; ++k)
+      for (size_t i = 0; i+(1<<k) <= n; ++i) {
+        auto x = rmq[k-1][i];
+        auto y = rmq[k-1][i+(1<<k-1)];
         rmq[k][i] = predFun(a[x], a[y]) == a[x] ? x : y;
       }
   }
 
-  pure size_t opDollar() const { return n; }
-
-  pure T opSlice(size_t l, size_t r) const
+  pure T opSlice(size_t l, size_t r)
   {
-    auto k = logTable[r - l - 1];
+    auto k = logTable[r-l-1];
     auto x = rmq[k][l];
-    auto y = rmq[k][r - (1 << k)];
+    auto y = rmq[k][r-(1<<k)];
     return predFun(a[x], a[y]);
   }
+
+  pure size_t opDollar() { return n; }
 }
 
 unittest

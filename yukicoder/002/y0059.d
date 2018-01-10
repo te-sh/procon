@@ -1,22 +1,24 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
+T read1(T)(){return readln.chomp.to!T;}
+void read2(S,T)(ref S a,ref T b){auto r=readln.splitter;a=r.front.to!S;r.popFront;b=r.front.to!T;}
 const auto maxW = 1_000_000;
 
 version(unittest) {} else
 void main()
 {
-  auto rd = readln.split, n = rd[0].to!size_t, k = rd[1].to!int;
+  int n, k; read2(n, k);
 
-  auto bt = BiTree!int(maxW + 1);
-  foreach (_; n.iota) {
-    auto w = readln.chomp.to!int;
+  auto bt = BiTree!int(maxW+1);
+  foreach (_; 0..n) {
+    auto w = read1!int;
     if (w > 0) {
       if (bt[w..$] < k)
-        bt[w] += 1;
+        ++bt[w];
     } else {
       w = -w;
       if (bt[w] > 0)
-        bt[w] += -1;
+        --bt[w];
     }
   }
 
@@ -31,37 +33,31 @@ struct BiTree(T)
   this(size_t n)
   {
     this.n = n;
-    this.buf = new T[](n + 1);
+    this.buf = new T[](n+1);
   }
 
-  void opIndexOpAssign(string op)(T val, size_t i)
-    if (op == "+")
+  void opIndexOpAssign(string op)(T val, size_t i) if (op == "+" || op == "-")
   {
     ++i;
-    while (i <= n) {
-      buf[i] += val;
-      i += i & -i;
-    }
+    for (; i <= n; i += i & -i) mixin("buf[i] " ~ op ~ "= val;");
   }
 
-  pure size_t opDollar() { return n; }
-
-  pure T opIndex(size_t i) const { return opSlice(i, i+1); }
-
-  pure T opSlice(size_t r, size_t l) const
+  void opIndexUnary(string op)(size_t i) if (op == "++" || op == "--")
   {
-    return get(l) - get(r);
+    ++i;
+    for (; i <= n; i += i & -i) mixin("buf[i]" ~ op ~ ";");
   }
+
+  pure T opSlice(size_t r, size_t l) { return get(l) - get(r); }
+  pure T opIndex(size_t i) { return opSlice(i, i+1); }
+  pure size_t opDollar() { return n; }
 
 private:
 
-  pure T get(size_t i) const
+  pure T get(size_t i)
   {
     auto s = T(0);
-    while (i > 0) {
-      s += buf[i];
-      i -= i & -i;
-    }
+    for (; i > 0; i -= i & -i) s += buf[i];
     return s;
   }
 }
