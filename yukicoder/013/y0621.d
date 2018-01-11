@@ -13,16 +13,13 @@ void main()
   int[int] mi;
   foreach (int i, stat; stats) mi[stat] = i;
 
-  auto m = new mint[][](ns, ns);
+  auto m = Matrix!mint(ns, ns);
   foreach (si; stats)
     foreach (sj; canMoves(si))
       m[mi[sj]][mi[si]] = 1;
 
-  auto u = new mint[][](ns, ns);
-  foreach (i; 0..ns) u[i][i] = 1;
-
   auto n = readln.chomp.to!long;
-  auto mp = repeatedSquare!(mint[][], matMul)(m, n, u);
+  auto mp = repeatedSquare!(Matrix!mint)(m, n, Matrix!mint.unit(ns));
 
   auto ans = mint(0);
   foreach (si; stats)
@@ -96,27 +93,45 @@ pure T repeatedSquare(T, alias pred = "a * b", U)(T a, U n, T init)
   return r;
 }
 
-T[][] matMul(T)(const T[][] a, const T[][] b)
+struct Matrix(T)
 {
-  auto l = b.length, m = a.length, n = b[0].length;
-  auto c = new T[][](m, n);
-  foreach (i; 0..m) {
-    static if (T.init != 0) c[i][] = 0;
-    foreach (j; 0..n)
-      foreach (k; 0..l)
-        c[i][j] += a[i][k] * b[k][j];
+  size_t r, c;
+  T[][] a;
+
+  static ref auto unit(size_t n)
+  {
+    auto r = Matrix!T(n, n);
+    foreach (i; 0..n) r[i][i] = 1;
+    return r;
   }
-  return c;
+
+  this(size_t r, size_t c)
+  {
+    this.r = r; this.c = c;
+    a = new T[][](r, c);
+    static if (T.init != 0) foreach (i; 0..r) a[i][] = 0;
+  }
+
+  ref T[] opIndex(size_t i) { return a[i]; }
+
+  ref auto opBinary(string op)(ref Matrix!T b) if (op == "+" || op == "-") in { assert(r == b.r && c == b.c); } body
+  {
+    auto x = Matrix!T(r, c);
+    foreach (i; 0..r) foreach (j; 0..c) x[i][j] = mixin("a[i][j]"~op~"b[i][j]");
+    return x;
+  }
+
+  ref auto opBinary(string op: "*")(ref Matrix!T b) in { assert(c == b.r); } body
+  {
+    auto x = Matrix!T(r, b.c);
+    foreach (i; 0..r) foreach (j; 0..b.c) foreach (k; 0..c) x[i][j] += a[i][k]*b[k][j];
+    return x;
+  }
 }
 
 struct FactorRing(int m, bool pos = false)
 {
-  version(BigEndian) {
-    union { long vl; struct { int vi2; int vi; } }
-  } else {
-    union { long vl; int vi; }
-  }
-
+  version(BigEndian) union { long vl; struct { int vi2; int vi; } } else union { long vl; int vi; }
   static init() { return FactorRing!(m, pos)(0); }
 
   @property int toInt() { return vi; }
@@ -126,45 +141,23 @@ struct FactorRing(int m, bool pos = false)
   this(int v, bool runMod) { vi = runMod ? mod(v) : v; }
   this(long v) { vi = mod(v); }
 
-  ref FactorRing!(m, pos) opAssign(int v) { vi = v; return this; }
+  ref auto opAssign(int v) { vi = v; return this; }
 
-  pure auto mod(int v) const
-  {
-    static if (pos) return v % m;
-    else return (v % m + m) % m;
-  }
+  pure auto mod(int v) const { static if (pos) return v%m; else return (v%m+m)%m; }
+  pure auto mod(long v) const { static if (pos) return cast(int)(v%m); else return cast(int)((v%m+m)%m); }
 
-  pure auto mod(long v) const
-  {
-    static if (pos) return cast(int)(v % m);
-    else return cast(int)((v % m + m) % m);
-  }
-
-  static if (!pos) {
-    pure auto opUnary(string op: "-")() const { return FactorRing!(m, pos)(mod(-vi)); }
-  }
+  static if (!pos) pure auto opUnary(string op: "-")() { return FactorRing!(m, pos)(mod(-vi)); }
 
   static if (m < int.max / 2) {
-    pure auto opBinary(string op: "+")(int rhs) const { return FactorRing!(m, pos)(mod(vi + rhs)); }
-    pure auto opBinary(string op: "-")(int rhs) const { return FactorRing!(m, pos)(mod(vi - rhs)); }
+    pure auto opBinary(string op)(int r) if (op == "+" || op == "-") { return FactorRing!(m, pos)(mod(mixin("vi"~op~"r"))); }
+    ref auto opOpAssign(string op)(int r) if (op == "+" || op == "-") { vi = mod(mixin("vi"~op~"r")); return this; }
   } else {
-    pure auto opBinary(string op: "+")(int rhs) const { return FactorRing!(m, pos)(mod(vl + rhs)); }
-    pure auto opBinary(string op: "-")(int rhs) const { return FactorRing!(m, pos)(mod(vl - rhs)); }
+    pure auto opBinary(string op)(int r) if (op == "+" || op == "-") { return FactorRing!(m, pos)(mod(mixin("vl"~op~"r"))); }
+    ref auto opOpAssign(string op)(int r) if (op == "+" || op == "-") { vi = mod(mixin("vl"~op~"r")); return this; }
   }
-  pure auto opBinary(string op: "*")(int rhs) const { return FactorRing!(m, pos)(mod(vl * rhs)); }
+  pure auto opBinary(string op: "*")(int r) { return FactorRing!(m, pos)(mod(vl*r)); }
+  ref auto opOpAssign(string op: "*")(int r) { vi = mod(vl*r); return this; }
 
-  pure auto opBinary(string op)(FactorRing!(m, pos) rhs) const
-    if (op == "+" || op == "-" || op == "*") { return opBinary!op(rhs.vi); }
-
-  static if (m < int.max / 2) {
-    auto opOpAssign(string op: "+")(int rhs) { vi = mod(vi + rhs); }
-    auto opOpAssign(string op: "-")(int rhs) { vi = mod(vi - rhs); }
-  } else {
-    auto opOpAssign(string op: "+")(int rhs) { vi = mod(vl + rhs); }
-    auto opOpAssign(string op: "-")(int rhs) { vi = mod(vl - rhs); }
-  }
-  auto opOpAssign(string op: "*")(int rhs) { vi = mod(vl * rhs); }
-
-  auto opOpAssign(string op)(FactorRing!(m, pos) rhs)
-    if (op == "+" || op == "-" || op == "*") { return opOpAssign!op(rhs.vi); }
+  pure auto opBinary(string op)(FactorRing!(m, pos) r) if (op == "+" || op == "-" || op == "*") { return opBinary!op(r.vi); }
+  ref auto opOpAssign(string op)(FactorRing!(m, pos) r) if (op == "+" || op == "-" || op == "*") { return opOpAssign!op(r.vi); }
 }

@@ -10,7 +10,7 @@ struct FactorRing(int m, bool pos = false)
   this(int v, bool runMod) { vi = runMod ? mod(v) : v; }
   this(long v) { vi = mod(v); }
 
-  ref FactorRing!(m, pos) opAssign(int v) { vi = v; return this; }
+  ref auto opAssign(int v) { vi = v; return this; }
 
   pure auto mod(int v) const { static if (pos) return v%m; else return (v%m+m)%m; }
   pure auto mod(long v) const { static if (pos) return cast(int)(v%m); else return cast(int)((v%m+m)%m); }
@@ -19,23 +19,23 @@ struct FactorRing(int m, bool pos = false)
 
   static if (m < int.max / 2) {
     pure auto opBinary(string op)(int r) if (op == "+" || op == "-") { return FactorRing!(m, pos)(mod(mixin("vi"~op~"r"))); }
-    auto opOpAssign(string op)(int r) if (op == "+" || op == "-") { vi = mod(mixin("vi"~op~"r")); return this; }
+    ref auto opOpAssign(string op)(int r) if (op == "+" || op == "-") { vi = mod(mixin("vi"~op~"r")); return this; }
   } else {
     pure auto opBinary(string op)(int r) if (op == "+" || op == "-") { return FactorRing!(m, pos)(mod(mixin("vl"~op~"r"))); }
-    auto opOpAssign(string op)(int r) if (op == "+" || op == "-") { vi = mod(mixin("vl"~op~"r")); return this; }
+    ref auto opOpAssign(string op)(int r) if (op == "+" || op == "-") { vi = mod(mixin("vl"~op~"r")); return this; }
   }
-  pure auto opBinary(string op: "*")(int r) const { return FactorRing!(m, pos)(mod(vl*r)); }
-  auto opOpAssign(string op: "*")(int r) { vi = mod(vl*r); return this; }
+  pure auto opBinary(string op: "*")(int r) { return FactorRing!(m, pos)(mod(vl*r)); }
+  ref auto opOpAssign(string op: "*")(int r) { vi = mod(vl*r); return this; }
 
   pure auto opBinary(string op)(FactorRing!(m, pos) r) if (op == "+" || op == "-" || op == "*") { return opBinary!op(r.vi); }
-  auto opOpAssign(string op)(FactorRing!(m, pos) r) if (op == "+" || op == "-" || op == "*") { return opOpAssign!op(r.vi); }
+  ref auto opOpAssign(string op)(FactorRing!(m, pos) r) if (op == "+" || op == "-" || op == "*") { return opOpAssign!op(r.vi); }
 
   pure auto opBinary(string op: "/")(FactorRing!(m, pos) r) { return FactorRing!(m, pos)(mod(vl * r.inv.vi)); }
   pure auto opBinary(string op: "/")(int r) { return opBinary!op(FactorRing!(m, pos)(r)); }
-  auto opOpAssign(string op: "/")(FactorRing!(m, pos) r) { vi = mod(vl * r.inv.vi); return this; }
-  auto opOpAssign(string op: "/")(int r) { return opOpAssign!op(FactorRing!(m, pos)(r)); }
+  ref auto opOpAssign(string op: "/")(FactorRing!(m, pos) r) { vi = mod(vl * r.inv.vi); return this; }
+  ref auto opOpAssign(string op: "/")(int r) { return opOpAssign!op(FactorRing!(m, pos)(r)); }
 
-  pure auto inv() const
+  pure auto inv()
   {
     import ex_euclid;
     int x = vi, a, b;
