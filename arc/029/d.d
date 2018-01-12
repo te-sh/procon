@@ -1,48 +1,49 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
+T read1(T)(){return readln.chomp.to!T;}
+void read2(S,T)(ref S a,ref T b){auto r=readln.splitter;a=r.front.to!S;r.popFront;b=r.front.to!T;}
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref ai; a)ai=readln.chomp.to!T;return a;}
+
 version(unittest) {} else
 void main()
 {
-  auto n = readln.chomp.to!int;
-  auto s = new long[](n);
-  foreach (i; 0..n) s[i] = readln.chomp.to!long;
-  auto c = new int[][](n), p = new int[](n);
+  auto n = read1!int;
+  auto s = readArrayM!long(n), ss = s.sum;
+
+  auto c = new int[][](n);
+  int a, b;
   foreach (i; 0..n-1) {
-    auto rd = readln.splitter;
-    auto a = rd.front.to!int-1; rd.popFront();
-    auto b = rd.front.to!int-1;
-    c[a] ~= b;
-    p[b] = a;
-  }
-  auto m = readln.chomp.to!int;
-  auto t = new long[](m);
-  foreach (i; 0..m) t[i] = readln.chomp.to!long;
-
-  auto nd = new int[](n), dp = new long[][](n, n+1);
-  auto inf = 10L^^16;
-  foreach_reverse (i; 0..n) {
-    nd[i] = 1;
-    foreach (ci; c[i]) nd[i] += nd[ci];
-
-    auto dp2 = new long[](nd[i]+1), dp3 = new long[](nd[i]+1);
-    dp2[] = inf;
-    dp2[0] = 0; dp2[1] = s[i];
-    foreach (ci; c[i]) {
-      dp3[] = dp2[];
-      foreach (j; 1..nd[ci]+1)
-        foreach_reverse (k; 1..nd[i]-j+1)
-          dp3[j+k] = min(dp2[j+k], dp2[k] + dp[ci][j]);
-      dp2[] = dp3[];
-    }
-    dp[i][0..nd[i]+1] = dp2[];
+    read2(a, b);
+    c[--a] ~= --b;
   }
 
+  auto m = read1!int;
+  auto t = readArrayM!long(m);
   t.sort!"a > b";
 
-  auto ans = 0L, ss = s.sum, st = 0L;
-  foreach (i; 0..min(n+1, m)) {
-    ans = max(ans, ss - dp[0][i] + st);
-    st += t[i];
+  auto dp = new long[][](n, n+1), nd = new int[](n);
+  foreach_reverse (i; 0..n) {
+    nd[i] = c[i].map!(j => nd[j]).sum + 1;
+    auto nci = c[i].length.to!int, ndi = nd[i];
+
+    auto dp2 = new long[][](nci+1, ndi);
+    foreach (j; 0..nci+1) dp2[j][] = 10L^^18;
+    dp2[0][0] = 0;
+
+    foreach (j; 0..nci) {
+      auto ci = c[i][j];
+      foreach (k; 0..ndi)
+        foreach (l; 0..nd[ci]+1)
+          if (k >= l)
+            dp2[j+1][k] = min(dp2[j+1][k], dp2[j][k-l] + dp[ci][l]);
+    }
+    foreach (k; 0..ndi)
+      dp[i][k+1] = dp2[nci][k] + s[i];
   }
+
+  auto ans = 0L;
+  foreach (i; 0..min(n, m)+1)
+    ans = max(ans, ss-dp[0][i]+t[0..i].sum);
+
   writeln(ans);
 }
