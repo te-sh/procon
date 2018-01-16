@@ -20,12 +20,12 @@ void main()
   foreach (int i, bcc; r.bccs)
     foreach (c; bcc) ec[c] = i;
 
-  auto t = Tree!int(nt);
+  auto gt = Graph!int(nt);
   foreach (b; r.brdg) {
     auto u = ec[b.u], v = ec[b.v];
-    t.addEdge(u, v);
+    gt.addEdgeB(u, v);
   }
-  t.rootify(0);
+  auto t = makeTree(gt).rootify(0).hlDecomposition;
 
   auto dist(int x, int y)
   {
@@ -45,10 +45,10 @@ void main()
   }
 }
 
-struct Graph(N = int, N i = 10^^9)
+struct Graph(N = int)
 {
   import std.typecons;
-  alias Node = N, inf = i;
+  alias Node = N;
   Node n;
   Node[][] g;
   mixin Proxy!g;
@@ -106,32 +106,25 @@ ref auto biconnectedComponents(Graph)(Graph g)
   return tuple!("bccs", "brdg")(bccs, brdg);
 }
 
-struct Tree(Node)
+struct Tree(Graph)
 {
-  import std.container;
+  import std.algorithm, std.container, std.typecons;
 
-  Node n;
-  Node[][] adj;
+  Graph g;
+  mixin Proxy!g;
+  alias Node = g.Node;
+  Node root;
+  Node[] parent;
   int[] size, depth;
-  Node[] head, parent, path;
-  Node[][] paths;
 
-  this(Node n)
-  {
-    this.n = n;
-    adj = new Node[][](n);
-  }
+  this(Graph g) { this.g = g; this.n = g.n; }
 
-  auto addEdge(Node s, Node t)
+  ref auto rootify(Node r)
   {
-    adj[s] ~= t;
-    adj[t] ~= s;
-  }
+    this.root = r;
 
-  auto rootify(Node r)
-  {
-    parent = new Node[](n);
-    depth = new int[](n);
+    parent = new Node[](g.n);
+    depth = new int[](g.n);
     depth[] = -1;
 
     struct UP { Node u, p; }
@@ -143,14 +136,14 @@ struct Tree(Node)
       parent[u] = p;
       depth[u] = depth[p] + 1;
 
-      foreach (v; adj[u])
+      foreach (v; g[u])
         if (v != p) {
           st1.insertFront(UP(v, u));
           st2.insertFront(UP(v, u));
         }
     }
 
-    size = new int[](n);
+    size = new int[](g.n);
     size[] = 1;
 
     while (!st2.empty) {
@@ -158,21 +151,39 @@ struct Tree(Node)
       size[p] += size[u];
     }
 
-    head = new Node[](n);
-    head[] = n;
+    return this;
+  }
+}
+
+ref auto makeTree(Graph)(Graph g) { return Tree!Graph(g); }
+
+struct HlDecomposition(Tree, Node)
+{
+  import std.container, std.typecons;
+
+  Tree t;
+  mixin Proxy!t;
+  Node[] head, path;
+  Node[][] paths;
+
+  this(Tree t)
+  {
+    this.t = t;
+    auto n = t.n;
+    head = new Node[](n); head[] = n;
 
     struct US { Node u, s; }
-    auto st = SList!US(US(r, r));
+    auto st = SList!US(US(t.root, t.root));
 
     while (!st.empty) {
       auto us = st.front, u = us.u, s = us.s; st.removeFront();
 
       head[u] = s;
       auto z = n;
-      foreach (v; adj[u])
-        if (head[v] == n && (z == n || size[z] < size[v])) z = v;
+      foreach (v; t[u])
+        if (head[v] == n && (z == n || t.size[z] < t.size[v])) z = v;
 
-      foreach (v; adj[u])
+      foreach (v; t[u])
         if (head[v] == n) st.insertFront(US(v, v == z ? s : v));
     }
   }
@@ -180,7 +191,7 @@ struct Tree(Node)
   auto makePath(Node r)
   {
     auto pathIndex = 0;
-    path = new Node[](n);
+    path = new Node[](t.n);
 
     auto q = DList!Node(r);
 
@@ -195,21 +206,23 @@ struct Tree(Node)
         paths[path[u]] ~= u;
       }
 
-      foreach (v; adj[u])
-        if (v != parent[u]) q.insertBack(v);
+      foreach (v; t[u])
+        if (v != t.parent[u]) q.insertBack(v);
     }
   }
 
-  auto depthInPath(size_t n)
+  auto depthInPath(Node n)
   {
-    return depth[n] - depth[head[n]];
+    return t.depth[n] - t.depth[head[n]];
   }
 
-  auto lca(size_t u, size_t v)
+  auto lca(Node u, Node v)
   {
     while (head[u] != head[v])
-      if (depth[head[u]] < depth[head[v]]) v = parent[head[v]];
-      else                                 u = parent[head[u]];
-    return depth[u] < depth[v] ? u : v;
+      if (t.depth[head[u]] < t.depth[head[v]]) v = t.parent[head[v]];
+      else                                     u = t.parent[head[u]];
+    return t.depth[u] < t.depth[v] ? u : v;
   }
 }
+
+ref auto hlDecomposition(Tree)(Tree t) { return HlDecomposition!(Tree, t.Node)(t); }

@@ -7,7 +7,7 @@ struct Tree(Graph)
   Graph g;
   mixin Proxy!g;
   alias Node = g.Node;
-  Node n, root;
+  Node root;
   Node[] parent;
   int[] size, depth;
 
@@ -17,8 +17,8 @@ struct Tree(Graph)
   {
     this.root = r;
 
-    parent = new Node[](n);
-    depth = new int[](n);
+    parent = new Node[](g.n);
+    depth = new int[](g.n);
     depth[] = -1;
 
     struct UP { Node u, p; }
@@ -37,7 +37,7 @@ struct Tree(Graph)
         }
     }
 
-    size = new int[](n);
+    size = new int[](g.n);
     size[] = 1;
 
     while (!st2.empty) {

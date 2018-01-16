@@ -1,7 +1,7 @@
-struct Graph(N = int, N i = 10^^9)
+struct Graph(N = int)
 {
   import std.typecons;
-  alias Node = N, inf = i;
+  alias Node = N;
   Node n;
   Node[][] g;
   mixin Proxy!g;
