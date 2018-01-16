@@ -19,7 +19,7 @@ void main()
     b[iby][ibx] ~= i;
   }
 
-  auto scc = StronglyConnectedComponents!int(n);
+  auto g = Graph!int(n);
   foreach (i; 0..n) {
     auto minS = ulong.max;
     if (m <= 5000) {
@@ -36,11 +36,11 @@ void main()
     foreach (j; 0..n)
       if (i != j) {
         auto d = dist(fx[i], fy[i], fx[j], fy[j]);
-        if (d < minS) scc.addEdge(i, j);
+        if (d < minS) g.addEdge(i, j);
       }
   }
 
-  auto c = scc.run(), ans = 0, visited = new bool[](n);
+  auto c = g.stronglyConnectedComponents, ans = 0, visited = new bool[](n);
   foreach (ci; c) {
     auto t = ci[0];
     if (!visited[t]) {
@@ -48,7 +48,7 @@ void main()
       auto q = SList!size_t(t);
       while (!q.empty) {
         auto u = q.front; q.removeFront();
-        foreach (v; scc.adj[u]) {
+        foreach (v; g[u]) {
           if (!visited[v]) {
             visited[v] = true;
             q.insertFront(v);
@@ -83,27 +83,31 @@ auto dist(int x1, int y1, int x2, int y2)
   return (x2-x1).abs.to!ulong ^^ 2 + (y2-y1).abs.to!ulong ^^ 2;
 }
 
-struct StronglyConnectedComponents(Node)
+struct Graph(N = int, N i = 10^^9)
+{
+  import std.typecons;
+  alias Node = N, inf = i;
+  Node n;
+  Node[][] g;
+  mixin Proxy!g;
+  this(Node n) { this.n = n; g = new Node[][](n); }
+  void addEdge(Node u, Node v) { g[u] ~= v; }
+  void addEdgeB(Node u, Node v) { g[u] ~= v; g[v] ~= u; }
+}
+
+auto stronglyConnectedComponents(Graph)(Graph g)
 {
   import std.algorithm, std.container;
 
-  Node n;
-  Node[][] adj, rdj;
+  alias Node = g.Node;
+  auto n = g.n;
 
-  this(Node n)
-  {
-    this.n = n;
-    adj = new Node[][](n);
-    rdj = new Node[][](n);
-  }
+  auto rdj = Graph(n), visited = new bool[](n);
+  foreach (u; 0..n)
+    foreach (v; g[u])
+      rdj.addEdge(v, u);
 
-  auto addEdge(Node src, Node dst)
-  {
-    adj[src] ~= dst;
-    rdj[dst] ~= src;
-  }
-
-  auto dfs(Node s, Node[][] adj, ref bool[] visited)
+  auto dfs(Node s, Graph adj, ref bool[] visited)
   {
     auto q = SList!Node(s);
     visited[s] = true;
@@ -121,20 +125,16 @@ struct StronglyConnectedComponents(Node)
     return comp;
   }
 
-  auto run()
-  {
-    Node[] ord;
-    Node[][] scc;
-    auto visited = new bool[](n);
+  Node[] ord;
+  Node[][] scc;
 
-    foreach (u; 0..n)
-      if (!visited[u]) ord ~= dfs(u, adj, visited);
+  foreach (u; 0..n)
+    if (!visited[u]) ord ~= dfs(u, g, visited);
 
-    visited[] = false;
+  visited[] = false;
 
-    foreach_reverse (u; ord)
-      if (!visited[u]) scc ~= dfs(u, rdj, visited);
+  foreach_reverse (u; ord)
+    if (!visited[u]) scc ~= dfs(u, rdj, visited);
 
-    return scc;
-  }
+  return scc;
 }

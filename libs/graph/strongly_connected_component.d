@@ -1,24 +1,18 @@
-struct StronglyConnectedComponents(Node)
+import graph;
+
+auto stronglyConnectedComponents(Graph)(Graph g)
 {
   import std.algorithm, std.container;
 
-  Node n;
-  Node[][] adj, rdj;
+  alias Node = g.Node;
+  auto n = g.n;
 
-  this(Node n)
-  {
-    this.n = n;
-    adj = new Node[][](n);
-    rdj = new Node[][](n);
-  }
+  auto rdj = Graph(n), visited = new bool[](n);
+  foreach (u; 0..n)
+    foreach (v; g[u])
+      rdj.addEdge(v, u);
 
-  auto addEdge(Node src, Node dst)
-  {
-    adj[src] ~= dst;
-    rdj[dst] ~= src;
-  }
-
-  auto dfs(Node s, Node[][] adj, ref bool[] visited)
+  auto dfs(Node s, Graph adj, ref bool[] visited)
   {
     auto q = SList!Node(s);
     visited[s] = true;
@@ -36,34 +30,30 @@ struct StronglyConnectedComponents(Node)
     return comp;
   }
 
-  auto run()
-  {
-    Node[] ord;
-    Node[][] scc;
-    auto visited = new bool[](n);
+  Node[] ord;
+  Node[][] scc;
 
-    foreach (u; 0..n)
-      if (!visited[u]) ord ~= dfs(u, adj, visited);
+  foreach (u; 0..n)
+    if (!visited[u]) ord ~= dfs(u, g, visited);
 
-    visited[] = false;
+  visited[] = false;
 
-    foreach_reverse (u; ord)
-      if (!visited[u]) scc ~= dfs(u, rdj, visited);
+  foreach_reverse (u; ord)
+    if (!visited[u]) scc ~= dfs(u, rdj, visited);
 
-    return scc;
-  }
+  return scc;
 }
 
 unittest
 {
-  auto scc = StronglyConnectedComponents!size_t(7);
-  scc.addEdge(0, 1);
-  scc.addEdge(1, 2);
-  scc.addEdge(2, 0);
-  scc.addEdge(2, 3);
-  scc.addEdge(3, 4);
-  scc.addEdge(4, 3);
-  scc.addEdge(4, 5);
-  scc.addEdge(4, 6);
-  assert(scc.run == [[1,2,0],[4,3],[6],[5]]);
+  auto g = Graph!int(7);
+  g.addEdge(0, 1);
+  g.addEdge(1, 2);
+  g.addEdge(2, 0);
+  g.addEdge(2, 3);
+  g.addEdge(3, 4);
+  g.addEdge(4, 3);
+  g.addEdge(4, 5);
+  g.addEdge(4, 6);
+  assert(g.stronglyConnectedComponents == [[1,2,0],[4,3],[6],[5]]);
 }

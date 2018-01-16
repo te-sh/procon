@@ -1,7 +1,5 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
-alias graph = Graph!int;
-
 version(unittest) {} else
 void main()
 {
@@ -12,12 +10,12 @@ void main()
     s[i].sort();
   }
 
-  auto g = new int[][](n);
+  auto g = Graph!int(n);
   foreach (i; 0..n)
     foreach (j; 0..n)
-      if (iota(3).all!(k => s[i][k] > s[j][k])) g[i] ~= j;
+      if (iota(3).all!(k => s[i][k] > s[j][k])) g.addEdge(i, j);
 
-  auto ts = graph.topologicalSort(g);
+  auto ts = g.topologicalSort;
 
   auto dp = new int[](n);
   dp[] = 1;
@@ -29,32 +27,41 @@ void main()
   writeln(dp.maxElement);
 }
 
-template Graph(Node)
+struct Graph(N = int, N i = 10^^9)
+{
+  import std.typecons;
+  alias Node = N, inf = i;
+  Node n;
+  Node[][] g;
+  mixin Proxy!g;
+  this(Node n) { this.n = n; g = new Node[][](n); }
+  void addEdge(Node u, Node v) { g[u] ~= v; }
+  void addEdgeB(Node u, Node v) { g[u] ~= v; g[v] ~= u; }
+}
+
+auto topologicalSort(Graph)(Graph g)
 {
   import std.container;
+  alias Node = g.Node;
+  auto n = cast(Node)(g.length), h = new int[](n);
 
-  Node[] topologicalSort(Node[][] g)
-  {
-    auto n = cast(Node)(g.length), h = new size_t[](n);
+  foreach (u; 0..n)
+    foreach (v; g[u])
+      ++h[v];
 
-    foreach (u; 0..n)
-      foreach (v; g[u])
-        ++h[v];
+  auto st = SList!Node();
+  foreach (i; 0..n)
+    if (h[i] == 0) st.insertFront(i);
 
-    auto st = SList!Node();
-    foreach (i; 0..n)
-      if (h[i] == 0) st.insertFront(i);
-
-    Node[] ans;
-    while (!st.empty()) {
-      auto u = st.front; st.removeFront();
-      ans ~= u;
-      foreach (v; g[u]) {
-        --h[v];
-        if (h[v] == 0) st.insertFront(v);
-      }
+  Node[] ans;
+  while (!st.empty()) {
+    auto u = st.front; st.removeFront();
+    ans ~= u;
+    foreach (v; g[u]) {
+      --h[v];
+      if (h[v] == 0) st.insertFront(v);
     }
-
-    return ans;
   }
+
+  return ans;
 }
