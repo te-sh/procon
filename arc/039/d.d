@@ -1,27 +1,27 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
+void readV(T...)(ref T t){auto r=readln.splitter;foreach(ref v;t){v=r.front.to!(typeof(v));r.popFront;}}
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref v;a){v=r.front.to!T;r.popFront;}return a;}
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref v;a)v=readln.chomp.to!T;return a;}
+
 version(unittest) {} else
 void main()
 {
-  auto rd1 = readln.split.to!(int[]), n = rd1[0], m = rd1[1];
-  auto g = new int[][](n);
+  int n, m; readV(n, m);
+  auto g = Graph!int(n);
   foreach (_; 0..m) {
-    auto rd2 = readln.splitter;
-    auto x = rd2.front.to!int-1; rd2.popFront();
-    auto y = rd2.front.to!int-1;
-    g[x] ~= y;
-    g[y] ~= x;
+    int x, y; readV(x, y); --x; --y;
+    g.addEdgeB(x, y);
   }
 
-  auto bccSt = BiconnectedComponent!int(g);
-  bccSt.run();
+  auto r = g.biconnectedComponents;
 
-  auto ec = new int[](n), nt = bccSt.bccs.length.to!int;
-  foreach (int i, bcc; bccSt.bccs)
+  auto ec = new int[](n), nt = r.bccs.length.to!int;
+  foreach (int i, bcc; r.bccs)
     foreach (c; bcc) ec[c] = i;
 
   auto t = Tree!int(nt);
-  foreach (b; bccSt.brdg) {
+  foreach (b; r.brdg) {
     auto u = ec[b.u], v = ec[b.v];
     t.addEdge(u, v);
   }
@@ -35,11 +35,7 @@ void main()
 
   auto q = readln.chomp.to!int;
   foreach (_; 0..q) {
-    auto rd2 = readln.splitter;
-    auto a = rd2.front.to!int-1; rd2.popFront();
-    auto b = rd2.front.to!int-1; rd2.popFront();
-    auto c = rd2.front.to!int-1; rd2.popFront();
-
+    int a, b, c; readV(a, b, c); --a; --b; --c;
     a = ec[a]; b = ec[b]; c = ec[c];
 
     if (dist(a, b) + dist(b, c) == dist(a, c))
@@ -49,35 +45,31 @@ void main()
   }
 }
 
-struct BiconnectedComponent(Node)
+struct Graph(N = int, N i = 10^^9)
 {
-  import std.algorithm, std.container, std.conv;
-
-  Node n, sent;
+  import std.typecons;
+  alias Node = N, inf = i;
+  Node n;
   Node[][] g;
+  mixin Proxy!g;
+  this(Node n) { this.n = n; g = new Node[][](n); }
+  void addEdge(Node u, Node v) { g[u] ~= v; }
+  void addEdgeB(Node u, Node v) { g[u] ~= v; g[v] ~= u; }
+}
 
-  Node[] ord;
-  bool[] inS;
-  SList!Node roots, S;
+ref auto biconnectedComponents(Graph)(Graph g)
+{
+  import std.algorithm, std.container, std.typecons;
+
+  alias Node = g.Node;
+  auto n = g.n, sent = g.n, ord = new Node[](n), inS = new bool[](n);
+  auto roots = SList!Node(), S = SList!Node();
 
   struct Edge { Node u, v; }
   Edge[] brdg;
   Node[][] bccs;
 
   int k;
-
-  this(Node[][] g)
-  {
-    this.g = g;
-    n = g.length.to!Node;
-    sent = n;
-
-    ord = new Node[](n);
-    inS = new bool[](n);
-
-    roots = SList!Node();
-    S = SList!Node();
-  }
 
   void visit(Node cur, Node prev)
   {
@@ -108,12 +100,10 @@ struct BiconnectedComponent(Node)
     }
   }
 
-  auto run()
-  {
-    foreach (i; 0..n)
-      if (!ord[i])
-        visit(i, sent);
-  }
+  foreach (i; 0..n)
+    if (!ord[i]) visit(i, sent);
+
+  return tuple!("bccs", "brdg")(bccs, brdg);
 }
 
 struct Tree(Node)
