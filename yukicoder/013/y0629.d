@@ -1,13 +1,17 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
+void readV(T...)(ref T t){auto r=readln.splitter;foreach(ref v;t){v=r.front.to!(typeof(v));r.popFront;}}
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref v;a){v=r.front.to!T;r.popFront;}return a;}
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref v;a)v=readln.chomp.to!T;return a;}
+
 version(unittest) {} else
 void main()
 {
-  auto rd = readln.split.to!(int[]), n = rd[0], m = rd[1];
-  auto a = readln.split.to!(int[]);
+  int n, m; readV(n, m);
+  auto a = readArray!int(n);
   auto g = new int[][](n);
   foreach (_; 0..m) {
-    auto rd2 = readln.split.to!(int[]), u = rd2[0]-1, v = rd2[1]-1;
+    int u, v; readV(u, v); --u; --v;
     g[u] ~= v;
     g[v] ~= u;
   }
