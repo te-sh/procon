@@ -1,18 +1,20 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
-alias graph = Graph!(long, size_t, 10L^^18);
-alias edge = graph.Edge;
+void readV(T...)(ref T t){auto r=readln.splitter;foreach(ref v;t){v=r.front.to!(typeof(v));r.popFront;}}
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref v;a){v=r.front.to!T;r.popFront;}return a;}
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref v;a)v=readln.chomp.to!T;return a;}
+
+alias graph = GraphW!(int, long, 10L^^18);
 
 version(unittest) {} else
 void main()
 {
-  auto rd1 = readln.split;
-  auto h = rd1[0].to!size_t, w = rd1[1].to!size_t, t = rd1[2].to!int;
+  int h, w, t; readV(h, w, t);
 
-  auto id(size_t i, size_t j) { return i*w+j; }
+  auto id(int i, int j) { return i*w+j; }
 
   auto s = new bool[](h*w);
-  size_t st, gl;
+  int st, gl;
   foreach (i; 0..h) {
     auto rd2 = readln.chomp;
     foreach (j; 0..w) {
@@ -28,12 +30,12 @@ void main()
 
   auto calcDist(int x)
   {
-    auto g = new edge[][](h*w);
+    auto g = graph(h*w);
 
-    auto addEdge(size_t i1, size_t j1, size_t i2, size_t j2)
+    auto addEdge(int i1, int j1, int i2, int j2)
     {
       auto id1 = id(i1, j1), id2 = id(i2, j2), w = s[id2] ? x : 1;
-      g[id1] ~= edge(id1, id2, w);
+      g.addEdge(id1, id2, w);
     }
 
     foreach (i; 0..h)
@@ -44,7 +46,7 @@ void main()
         if (i < h-1) addEdge(i, j, i+1, j);
       }
 
-    auto r = graph.dijkstra(g, st);
+    auto r = Dijkstra!(typeof(g)).dijkstra(g, st);
     return r[gl];
   }
 
@@ -54,38 +56,37 @@ void main()
   writeln(ans.front.x - 1);
 }
 
-template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+struct GraphW(N = int, W = int, W i = 10^^9)
 {
-  import std.container;
+  import std.typecons;
+  alias Node = N, Wt = W, inf = i;
+  struct Edge { Node src, dst; Wt wt; }
+  Node n;
+  Edge[][] g;
+  mixin Proxy!g;
+  this(Node n) { this.n = n; g = new Edge[][](n); }
+  void addEdge(Node u, Node v, Wt w) { g[u] ~= Edge(u, v, w); }
+  void addEdgeB(Node u, Node v, Wt w) { g[u] ~= Edge(u, v, w); g[v] ~= Edge(v, u, w); }
+}
 
-  const inf = _inf, sent = _sent;
+template Dijkstra(Graph)
+{
+  import std.array, std.container, std.traits;
+  alias Node = TemplateArgsOf!Graph[0], Wt = TemplateArgsOf!Graph[1];
+  alias Edge = Graph.Edge;
 
-  struct Edge
+  void dijkstra(Graph g, Node s, out Wt[] dist, out Node[] prev)
   {
-    Node src, dst;
-    Wt wt;
-  }
-
-  Wt[] dijkstra(Edge[][] g, Node s)
-  {
-    Wt[] dist;
-    Node[] prev;
-    dijkstra(g, s, dist, prev);
-    return dist;
-  }
-
-  void dijkstra(Edge[][] g, Node s, out Wt[] dist, out Node[] prev)
-  {
-    auto n = g.length;
+    auto n = g.n, sent = n;
 
     dist = new Wt[](n);
-    dist[] = inf;
+    dist[] = g.inf;
     dist[s] = 0;
 
     prev = new Node[](n);
     prev[] = sent;
 
-    auto q = heapify!("a.wt > b.wt")(Array!Edge(Edge(sent, s)));
+    auto q = heapify!("a.wt > b.wt")(Array!Edge(Edge(sent, s, 0)));
     while (!q.empty) {
       auto e = q.front; q.removeFront();
       if (prev[e.dst] != sent) continue;
@@ -98,5 +99,13 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
         }
       }
     }
+  }
+
+  auto dijkstra(Graph g, Node s)
+  {
+    Wt[] dist;
+    Node[] prev;
+    dijkstra(g, s, dist, prev);
+    return dist;
   }
 }

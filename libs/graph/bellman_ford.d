@@ -1,28 +1,16 @@
-struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+import graph;
+
+template BellmanFord(Graph)
 {
-  const inf = _inf, sent = _sent;
+  import std.traits;
+  alias Node = TemplateArgsOf!Graph[0], Wt = TemplateArgsOf!Graph[1];
 
-  struct Edge { Node src, dst; Wt wt; }
-
-  Edge[][] g;
-
-  this(size_t n) { g = new Edge[][](n); }
-  auto addEdge(Node src, Node dst, Wt wt) { g[src] ~= Edge(src, dst, wt); }
-
-  Wt[] bellmanFord(Node s)
+  void bellmanFord(Graph g, Node s, out Wt[] dist, out Node[] prev)
   {
-    Wt[] dist;
-    Node[] prev;
-    bellmanFord(s, dist, prev);
-    return dist;
-  }
-
-  void bellmanFord(Node s, out Wt[] dist, out Node[] prev)
-  {
-    auto n = g.length;
+    auto n = g.n, sent = n;
 
     dist = new Wt[](n);
-    dist[] = inf + inf;
+    dist[] = g.inf + g.inf;
     dist[s] = 0;
 
     prev = new Node[](n);
@@ -34,14 +22,22 @@ struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
           if (dist[e.dst] > dist[e.src] + e.wt) {
             dist[e.dst] = dist[e.src] + e.wt;
             prev[e.dst] = e.src;
-            if (k == n-1) dist[e.dst] = -inf;
+            if (k == n-1) dist[e.dst] = -g.inf;
           }
+  }
+
+  Wt[] bellmanFord(Graph g, Node s)
+  {
+    Wt[] dist;
+    Node[] prev;
+    bellmanFord(g, s, dist, prev);
+    return dist;
   }
 }
 
 unittest
 {
-  auto g = Graph!int(9);
+  auto g = GraphW!int(9);
   g.addEdge(0, 1, 5); g.addEdge(0, 2, 4);
   g.addEdge(1, 2, -2); g.addEdge(1, 3, 1);
   g.addEdge(2, 4, 1); g.addEdge(2, 5, 4);
@@ -51,7 +47,7 @@ unittest
   g.addEdge(7, 8, -1);
   g.addEdge(8, 6, -1);
 
-  auto dist = g.bellmanFord(0);
+  auto dist = BellmanFord!(typeof(g)).bellmanFord(g, 0);
   assert(dist[1] == 5);
   assert(dist[2] == 3);
   assert(dist[5] == 7);

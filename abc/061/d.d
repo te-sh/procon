@@ -1,50 +1,53 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
-alias graph = Graph!(long, size_t, 10L ^^ 18);
-alias edge = graph.Edge;
+void readV(T...)(ref T t){auto r=readln.splitter;foreach(ref v;t){v=r.front.to!(typeof(v));r.popFront;}}
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref v;a){v=r.front.to!T;r.popFront;}return a;}
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref v;a)v=readln.chomp.to!T;return a;}
+
+alias graph = GraphW!(int, long, 10L ^^ 18);
 
 version(unittest) {} else
 void main()
 {
-  auto rd1 = readln.split.to!(size_t[]), n = rd1[0], m = rd1[1];
+  int n, m; readV(n, m);
 
-  auto g = new edge[][](n);
+  auto g = graph(n);
   foreach (_; 0..m){
-    auto rd2 = readln.split, a = rd2[0].to!size_t-1, b = rd2[1].to!size_t-1, c = rd2[2].to!long;
-    g[a] ~= edge(a, b, -c);
+    int a, b; long c; readV(a, b, c); --a; --b;
+    g.addEdge(a, b, -c);
   }
 
-  auto dist = graph.bellmanFord(g, 0), d = dist[n-1];
+  auto dist = BellmanFord!(typeof(g)).bellmanFord(g, 0), d = dist[n-1];
   if (d <= -graph.inf)
     writeln("inf");
   else
     writeln(-d);
 }
 
-template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+struct GraphW(N = int, W = int, W i = 10^^9)
 {
-  const inf = _inf, sent = _sent;
+  import std.typecons;
+  alias Node = N, Wt = W, inf = i;
+  struct Edge { Node src, dst; Wt wt; }
+  Node n;
+  Edge[][] g;
+  mixin Proxy!g;
+  this(Node n) { this.n = n; g = new Edge[][](n); }
+  void addEdge(Node u, Node v, Wt w) { g[u] ~= Edge(u, v, w); }
+  void addEdgeB(Node u, Node v, Wt w) { g[u] ~= Edge(u, v, w); g[v] ~= Edge(v, u, w); }
+}
 
-  struct Edge
-  {
-    Node src, dst;
-    Wt wt;
-  }
+template BellmanFord(Graph)
+{
+  import std.traits;
+  alias Node = TemplateArgsOf!Graph[0], Wt = TemplateArgsOf!Graph[1];
 
-  Wt[] bellmanFord(Edge[][] g, Node s)
+  void bellmanFord(Graph g, Node s, out Wt[] dist, out Node[] prev)
   {
-    Wt[] dist;
-    Node[] prev;
-    bellmanFord(g, s, dist, prev);
-    return dist;
-  }
-
-  void bellmanFord(Edge[][] g, Node s, out Wt[] dist, out Node[] prev)
-  {
-    auto n = g.length;
+    auto n = g.n, sent = n;
 
     dist = new Wt[](n);
-    dist[] = inf + inf;
+    dist[] = g.inf + g.inf;
     dist[s] = 0;
 
     prev = new Node[](n);
@@ -56,7 +59,15 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
           if (dist[e.dst] > dist[e.src] + e.wt) {
             dist[e.dst] = dist[e.src] + e.wt;
             prev[e.dst] = e.src;
-            if (k == n-1) dist[e.dst] = -inf;
+            if (k == n-1) dist[e.dst] = -g.inf;
           }
+  }
+
+  Wt[] bellmanFord(Graph g, Node s)
+  {
+    Wt[] dist;
+    Node[] prev;
+    bellmanFord(g, s, dist, prev);
+    return dist;
   }
 }

@@ -1,30 +1,17 @@
-struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+import graph;
+
+template Dijkstra(Graph)
 {
-  import std.container;
+  import std.array, std.container, std.traits;
+  alias Node = TemplateArgsOf!Graph[0], Wt = TemplateArgsOf!Graph[1];
+  alias Edge = Graph.Edge;
 
-  const inf = _inf, sent = _sent;
-
-  struct Edge { Node src, dst; Wt wt; }
-  Edge[][] g;
-
-  this(size_t n) { g = new Edge[][](n); }
-  void addEdge(Node src, Node dst, Wt wt) { g[src] ~= Edge(src, dst, wt); }
-  void addEdgeB(Node src, Node dst, Wt wt) { g[src] ~= Edge(src, dst, wt); g[dst] ~= Edge(dst, src, wt); }
-
-  Wt[] dijkstra(Node s)
+  void dijkstra(Graph g, Node s, out Wt[] dist, out Node[] prev)
   {
-    Wt[] dist;
-    Node[] prev;
-    dijkstra(s, dist, prev);
-    return dist;
-  }
-
-  void dijkstra(Node s, out Wt[] dist, out Node[] prev)
-  {
-    auto n = g.length;
+    auto n = g.n, sent = n;
 
     dist = new Wt[](n);
-    dist[] = inf;
+    dist[] = g.inf;
     dist[s] = 0;
 
     prev = new Node[](n);
@@ -44,11 +31,19 @@ struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
       }
     }
   }
+
+  auto dijkstra(Graph g, Node s)
+  {
+    Wt[] dist;
+    Node[] prev;
+    dijkstra(g, s, dist, prev);
+    return dist;
+  }
 }
 
 unittest
 {
-  auto g = Graph!(int)(6);
+  auto g = GraphW!int(6);
   g.addEdge(0, 1, 5); g.addEdge(0, 2, 4); g.addEdge(0, 3, 2);
   g.addEdge(1, 0, 5); g.addEdge(1, 2, 2); g.addEdge(1, 4, 6);
   g.addEdge(2, 0, 4); g.addEdge(2, 1, 2); g.addEdge(2, 3, 3); g.addEdge(2, 5, 2);
@@ -56,7 +51,7 @@ unittest
   g.addEdge(4, 1, 6); g.addEdge(4, 5, 4);
   g.addEdge(5, 2, 2); g.addEdge(5, 3, 6); g.addEdge(5, 4, 4);
 
-  auto dist = g.dijkstra(0);
+  auto dist = Dijkstra!(typeof(g)).dijkstra(g, 0);
 
   assert(dist[4] == 10);
   assert(dist[5] == 6);
