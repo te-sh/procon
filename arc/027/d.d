@@ -1,22 +1,23 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
+void readV(T...)(ref T t){auto r=readln.splitter;foreach(ref v;t){v=r.front.to!(typeof(v));r.popFront;}}
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref v;a){v=r.front.to!T;r.popFront;}return a;}
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref v;a)v=readln.chomp.to!T;return a;}
+
 const mod = 10^^9+7;
 alias mint = FactorRing!mod;
-alias Mat = mint[][];
+alias Mat = Matrix!mint;
 auto mh = 10;
 
 version(unittest) {} else
 void main()
 {
-  auto n = readln.chomp.to!int;
-  auto h = readln.split.to!(int[]);
-  auto d = readln.chomp.to!int;
-  auto s = new int[](d);
-  auto t = new int[](d);
+  int n; readV(n);
+  auto h = readArray!int(n);
+  int d; readV(d);
+  auto s = new int[](d), t = new int[](d);
   foreach (i; 0..d) {
-    auto rd = readln.split.to!(int[]), si = rd[0]-1, ti = rd[1]-1;
-    s[i] = si;
-    t[i] = ti;
+    readV(s[i], t[i]); --s[i]; --t[i];
   }
 
   auto u = (s ~ t).sort().uniq.array, nu = u.length;
@@ -42,7 +43,7 @@ void main()
   foreach (ref si; s) si = buf[si];
   foreach (ref ti; t) ti = buf[ti];
 
-  auto st = SegmentTree!(Mat, matMul)(m, unit());
+  auto st = SegmentTree!(Mat, "a*b")(m, Mat.unit(mh));
 
   foreach (i; 0..d) {
     auto r = st[s[i]..t[i]];
@@ -50,46 +51,58 @@ void main()
   }
 }
 
-auto unit()
-{
-  auto m = new mint[][](mh, mh);
-  foreach (i; 0..mh)
-    foreach (j; 0..mh)
-      m[i][j] = 0;
-  foreach (i; 0..mh) m[i][i] = 1;
-  return m;
-}
-
 auto buildMuledMat(int[] h)
 {
   auto m = buildMat(h[0]);
-  foreach (hi; h[1..$])
-    m = matMul(m, buildMat(hi));
+  foreach (hi; h[1..$]) m = m * buildMat(hi);
   return m;
 }
 
 auto buildMat(int h)
 {
-  auto m = new mint[][](mh, mh);
-  foreach (i; 0..mh)
-    foreach (j; 0..mh)
-      m[i][j] = 0;
+  auto m = Mat(mh, mh);
   foreach (i; 0..h) m[0][i] = 1;
   foreach (i; 0..mh-1) m[i+1][i] = 1;
   return m;
 }
 
-T[][] matMul(T)(const T[][] a, const T[][] b)
+struct Matrix(T)
 {
-  auto l = b.length, m = a.length, n = b[0].length;
-  auto c = new T[][](m, n);
-  foreach (i; 0..m) {
-    static if (T.init != 0) c[i][] = 0;
-    foreach (j; 0..n)
-      foreach (k; 0..l)
-        c[i][j] += a[i][k] * b[k][j];
+  import std.algorithm, std.math;
+
+  size_t r, c;
+  T[][] a;
+  alias a this;
+
+  static ref auto unit(size_t n)
+  {
+    auto r = Matrix!T(n, n);
+    foreach (i; 0..n) r[i][i] = 1;
+    return r;
   }
-  return c;
+
+  this(size_t r, size_t c)
+  {
+    this.r = r; this.c = c;
+    a = new T[][](r, c);
+    static if (T.init != 0) foreach (i; 0..r) a[i][] = 0;
+  }
+
+  ref auto dup() { auto x = Matrix!T(r, c); foreach (i; 0..r) x[i][] = a[i][]; return x; }
+
+  ref auto opBinary(string op)(Matrix!T b) if (op == "+" || op == "-") in { assert(r == b.r && c == b.c); } body
+  {
+    auto x = Matrix!T(r, c);
+    foreach (i; 0..r) foreach (j; 0..c) x[i][j] = mixin("a[i][j]"~op~"b[i][j]");
+    return x;
+  }
+
+  ref auto opBinary(string op: "*")(Matrix!T b) in { assert(c == b.r); } body
+  {
+    auto x = Matrix!T(r, b.c);
+    foreach (i; 0..r) foreach (j; 0..b.c) foreach (k; 0..c) x[i][j] += a[i][k]*b[k][j];
+    return x;
+  }
 }
 
 struct SegmentTree(T, alias pred = "a + b")
@@ -145,60 +158,34 @@ struct SegmentTree(T, alias pred = "a + b")
 
 struct FactorRing(int m, bool pos = false)
 {
-  version(BigEndian) {
-    union { long vl; struct { int vi2; int vi; } }
-  } else {
-    union { long vl; int vi; }
-  }
-
-  static init() { return FactorRing!(m, pos)(0); }
-
-  @property int toInt() { return vi; }
-  alias toInt this;
+  version(BigEndian) union { long vl; struct { int vi2; int vi; } } else union { long vl; int vi; }
+  alias FR = FactorRing!(m, pos);
+  @property static init() { return FR(0); }
+  @property int value() { return vi; }
+  @property void value(int v) { vi = mod(v); }
+  alias value this;
 
   this(int v) { vi = v; }
   this(int v, bool runMod) { vi = runMod ? mod(v) : v; }
   this(long v) { vi = mod(v); }
 
-  ref FactorRing!(m, pos) opAssign(int v) { vi = v; return this; }
+  ref auto opAssign(int v) { vi = v; return this; }
 
-  pure auto mod(int v) const
-  {
-    static if (pos) return v % m;
-    else return (v % m + m) % m;
-  }
+  pure auto mod(int v) const { static if (pos) return v%m; else return (v%m+m)%m; }
+  pure auto mod(long v) const { static if (pos) return cast(int)(v%m); else return cast(int)((v%m+m)%m); }
 
-  pure auto mod(long v) const
-  {
-    static if (pos) return cast(int)(v % m);
-    else return cast(int)((v % m + m) % m);
-  }
-
-  static if (!pos) {
-    pure auto opUnary(string op: "-")() const { return FactorRing!(m, pos)(mod(-vi)); }
-  }
+  static if (!pos) pure ref auto opUnary(string op: "-")() { return FR(mod(-vi)); }
 
   static if (m < int.max / 2) {
-    pure auto opBinary(string op: "+")(int rhs) const { return FactorRing!(m, pos)(mod(vi + rhs)); }
-    pure auto opBinary(string op: "-")(int rhs) const { return FactorRing!(m, pos)(mod(vi - rhs)); }
+    pure ref auto opBinary(string op)(int r) if (op == "+" || op == "-") { return FR(mod(mixin("vi"~op~"r"))); }
+    ref auto opOpAssign(string op)(int r) if (op == "+" || op == "-") { vi = mod(mixin("vi"~op~"r")); return this; }
   } else {
-    pure auto opBinary(string op: "+")(int rhs) const { return FactorRing!(m, pos)(mod(vl + rhs)); }
-    pure auto opBinary(string op: "-")(int rhs) const { return FactorRing!(m, pos)(mod(vl - rhs)); }
+    pure ref auto opBinary(string op)(int r) if (op == "+" || op == "-") { return FR(mod(mixin("vl"~op~"r"))); }
+    ref auto opOpAssign(string op)(int r) if (op == "+" || op == "-") { vi = mod(mixin("vl"~op~"r")); return this; }
   }
-  pure auto opBinary(string op: "*")(int rhs) const { return FactorRing!(m, pos)(mod(vl * rhs)); }
+  pure ref auto opBinary(string op: "*")(int r) { return FR(mod(vl*r)); }
+  ref auto opOpAssign(string op: "*")(int r) { vi = mod(vl*r); return this; }
 
-  pure auto opBinary(string op)(FactorRing!(m, pos) rhs) const
-    if (op == "+" || op == "-" || op == "*") { return opBinary!op(rhs.vi); }
-
-  static if (m < int.max / 2) {
-    auto opOpAssign(string op: "+")(int rhs) { vi = mod(vi + rhs); }
-    auto opOpAssign(string op: "-")(int rhs) { vi = mod(vi - rhs); }
-  } else {
-    auto opOpAssign(string op: "+")(int rhs) { vi = mod(vl + rhs); }
-    auto opOpAssign(string op: "-")(int rhs) { vi = mod(vl - rhs); }
-  }
-  auto opOpAssign(string op: "*")(int rhs) { vi = mod(vl * rhs); }
-
-  auto opOpAssign(string op)(FactorRing!(m, pos) rhs)
-    if (op == "+" || op == "-" || op == "*") { return opOpAssign!op(rhs.vi); }
+  pure ref auto opBinary(string op)(ref FR r) if (op == "+" || op == "-" || op == "*") { return opBinary!op(r.vi); }
+  ref auto opOpAssign(string op)(ref FR r) if (op == "+" || op == "-" || op == "*") { return opOpAssign!op(r.vi); }
 }

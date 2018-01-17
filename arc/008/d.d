@@ -1,17 +1,18 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
-const unit = [[1.0L, 0.0L], [0.0L, 1.0L]];
+void readV(T...)(ref T t){auto r=readln.splitter;foreach(ref v;t){v=r.front.to!(typeof(v));r.popFront;}}
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref v;a){v=r.front.to!T;r.popFront;}return a;}
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref v;a)v=readln.chomp.to!T;return a;}
+
+alias Mat = Matrix!real;
 
 version(unittest) {} else
 void main()
 {
-  auto rd1 = readln.split.to!(size_t[]), n = rd1[0], m = rd1[1];
-  auto p = new size_t[](m), a = new real[](m), b = new real[](m);
+  long n; int m; readV(n, m);
+  auto p = new long[](m), a = new real[](m), b = new real[](m);
   foreach (i; 0..m) {
-    auto rd2 = readln.splitter;
-    p[i] = rd2.front.to!size_t-1; rd2.popFront();
-    a[i] = rd2.front.to!real; rd2.popFront();
-    b[i] = rd2.front.to!real;
+    readV(p[i], a[i], b[i]); --p[i];
   }
 
   if (m == 0) {
@@ -22,18 +23,18 @@ void main()
 
   auto q = p.dup;
   q.sort();
-  size_t[size_t] z;
-  auto c = size_t(0);
+  int[long] z;
+  auto c = 0;
   foreach (qi; q.uniq) z[qi] = c++;
   foreach (ref pi; p) pi = z[pi];
 
   auto np = p.reduce!max;
-  auto st = SegmentTree!(real[][], unit, matMul)(np+1);
+  auto st = SegmentTree!(Mat, "a*b")(np+1, Mat.unit(2));
 
   auto mi = 1.0L, ma = 1.0L;
   foreach (i; 0..m) {
-    st[np-p[i]] = [[a[i], b[i]], [0.0L, 1.0L]];
-    auto rn = matMulVec(st[0..$], [1.0L, 1.0L])[0];
+    st[np-p[i]] = Mat([[a[i], b[i]], [0.0L, 1.0L]]);
+    auto rn = (st[0..$] * [1.0L, 1.0L])[0];
     mi = min(mi, rn);
     ma = max(ma, rn);
   }
@@ -42,51 +43,79 @@ void main()
   writefln("%.7f", ma);
 }
 
-T[][] matMul(T)(const T[][] a, const T[][] b)
+struct Matrix(T)
 {
-  auto l = b.length, m = a.length, n = b[0].length;
-  auto c = new T[][](m, n);
-  foreach (i; 0..m) {
-    c[i][] = 0;
-    foreach (j; 0..n)
-      foreach (k; 0..l)
-        c[i][j] += a[i][k] * b[k][j];
+  size_t r, c;
+  T[][] a;
+  alias a this;
+
+  static ref auto unit(size_t n)
+  {
+    auto r = Matrix!T(n, n);
+    foreach (i; 0..n) r[i][i] = 1;
+    return r;
   }
-  return c;
+
+  this(size_t r, size_t c)
+  {
+    this.r = r; this.c = c;
+    a = new T[][](r, c);
+    static if (T.init != 0) foreach (i; 0..r) a[i][] = 0;
+  }
+
+  this(T[][] b)
+  {
+    r = b.length;
+    c = b[0].length;
+    a = b;
+  }
+
+  ref auto dup() { auto x = Matrix!T(r, c); foreach (i; 0..r) x[i][] = a[i][]; return x; }
+
+  ref auto opBinary(string op)(Matrix!T b) if (op == "+" || op == "-") in { assert(r == b.r && c == b.c); } body
+  {
+    auto x = Matrix!T(r, c);
+    foreach (i; 0..r) foreach (j; 0..c) x[i][j] = mixin("a[i][j]"~op~"b[i][j]");
+    return x;
+  }
+
+  ref auto opBinary(string op: "*")(Matrix!T b) in { assert(c == b.r); } body
+  {
+    auto x = Matrix!T(r, b.c);
+    foreach (i; 0..r) foreach (j; 0..b.c) foreach (k; 0..c) x[i][j] += a[i][k]*b[k][j];
+    return x;
+  }
+
+  ref auto opBinary(string op: "*")(T[] b) in { assert(c == b.length); } body
+  {
+    auto x = new T[](r);
+    static if (T.init != 0) x[] = 0;
+    foreach (i; 0..r) foreach (j; 0..c) x[i] += a[i][j]*b[j];
+    return x;
+  }                                                                             
 }
 
-T[] matMulVec(T)(const T[][] a, const T[] b)
-{
-  auto l = b.length, m = a.length;
-  auto c = new T[](m);
-  c[] = 0;
-  foreach (i; 0..m)
-    foreach (j; 0..l)
-      c[i] += a[i][j] * b[j];
-  return c;
-}
-
-struct SegmentTree(T, T unit, alias pred = "a + b")
+struct SegmentTree(T, alias pred = "a + b")
 {
   import core.bitop, std.functional;
   alias predFun = binaryFun!pred;
 
   const size_t n, an;
   T[] buf;
+  T unit;
 
-  this(size_t n)
+  this(size_t n, T unit = T.init)
   {
     this.n = n;
-    an = (1 << ((n - 1).bsr + 1));
-    buf = new T[](an * 2);
-    static if (T.init != unit) {
-      buf[] = unit;
-    }
+    this.unit = unit;
+    an = (1 << ((n-1).bsr + 1));
+    buf = new T[](an*2);
+    if (T.init != unit) buf[] = unit;
   }
 
-  this(T[] init)
+  this(T[] init, T unit = T.init)
   {
-    this(init.length);
+    this(init.length, unit);
     buf[an..an+n][] = init[];
     foreach_reverse (i; 1..an)
       buf[i] = predFun(buf[i*2], buf[i*2+1]);
@@ -96,10 +125,10 @@ struct SegmentTree(T, T unit, alias pred = "a + b")
   {
     buf[i += an] = val;
     while (i /= 2)
-      buf[i] = predFun(buf[i * 2], buf[i * 2 + 1]);
+      buf[i] = predFun(buf[i*2], buf[i*2+1]);
   }
 
-  pure T opSlice(size_t l, size_t r) const
+  pure T opSlice(size_t l, size_t r)
   {
     l += an; r += an;
     T r1 = unit, r2 = unit;
@@ -111,6 +140,6 @@ struct SegmentTree(T, T unit, alias pred = "a + b")
     return predFun(r1, r2);
   }
 
-  pure size_t opDollar() const { return n; }
-  pure T opIndex(size_t i) { return buf[i + an]; }
+  pure T opIndex(size_t i) { return buf[i+an]; }
+  pure size_t opDollar() { return n; }
 }
