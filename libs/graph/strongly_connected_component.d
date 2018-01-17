@@ -1,6 +1,6 @@
 import graph;
 
-auto stronglyConnectedComponents(Graph)(Graph g)
+auto stronglyConnectedComponents(Graph)(ref Graph g)
 {
   import std.algorithm, std.container;
 

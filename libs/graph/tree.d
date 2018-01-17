@@ -11,7 +11,7 @@ struct Tree(Graph)
   Node[] parent;
   int[] size, depth;
 
-  this(Graph g) { this.g = g; this.n = g.n; }
+  this(ref Graph g) { this.g = g; this.n = g.n; }
 
   ref auto rootify(Node r)
   {

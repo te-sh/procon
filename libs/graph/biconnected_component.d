@@ -1,6 +1,6 @@
 import graph;
 
-ref auto biconnectedComponents(Graph)(Graph g)
+ref auto biconnectedComponents(Graph)(ref Graph g)
 {
   import std.algorithm, std.container, std.typecons;
 

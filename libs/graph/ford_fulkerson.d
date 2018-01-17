@@ -7,7 +7,7 @@ template FordFulkerson(Graph)
 
   struct EdgeR { Node src, dst; Wt cap, flow; Node rev; }
 
-  Wt fordFulkerson(Graph g, Node s, Node t)
+  Wt fordFulkerson(ref Graph g, Node s, Node t)
   {
     auto n = g.n, adj = withRev(g, n), visited = new bool[](n);
 
@@ -40,7 +40,7 @@ template FordFulkerson(Graph)
     return flow;
   }
 
-  EdgeR[][] withRev(Graph g, Node n)
+  EdgeR[][] withRev(ref Graph g, Node n)
   {
     auto r = new EdgeR[][](n);
 

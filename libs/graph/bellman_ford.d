@@ -5,7 +5,7 @@ template BellmanFord(Graph)
   import std.traits;
   alias Node = TemplateArgsOf!Graph[0], Wt = TemplateArgsOf!Graph[1];
 
-  void bellmanFord(Graph g, Node s, out Wt[] dist, out Node[] prev)
+  void bellmanFord(ref Graph g, Node s, out Wt[] dist, out Node[] prev)
   {
     auto n = g.n, sent = n;
 
@@ -26,7 +26,7 @@ template BellmanFord(Graph)
           }
   }
 
-  Wt[] bellmanFord(Graph g, Node s)
+  Wt[] bellmanFord(ref Graph g, Node s)
   {
     Wt[] dist;
     Node[] prev;

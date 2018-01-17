@@ -22,3 +22,14 @@ struct GraphW(N = int, W = int, W i = 10^^9)
   void addEdge(Node u, Node v, Wt w) { g[u] ~= Edge(u, v, w); }
   void addEdgeB(Node u, Node v, Wt w) { g[u] ~= Edge(u, v, w); g[v] ~= Edge(v, u, w); }
 }
+
+struct GraphM(W = int, W i = 10^^9)
+{
+  import std.typecons;
+  alias Wt = W, inf = i;
+  int n;
+  Wt[][] g;
+  mixin Proxy!g;
+  this(int n) { this.n = n; g = new Wt[][](n, n); }
+  ref auto init() { foreach (i; 0..n) { g[i][] = inf; g[i][i] = 0; } return this; }
+}

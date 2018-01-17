@@ -7,7 +7,7 @@ template Dinic(Graph)
 
   struct EdgeR { Node src, dst; Wt cap, flow; Node rev; }
 
-  Wt dinic(Graph g, Node s, Node t)
+  Wt dinic(ref Graph g, Node s, Node t)
   {
     auto n = g.n, adj = withRev(g, n), level = new int[](n);
 
@@ -57,7 +57,7 @@ template Dinic(Graph)
     return flow;
   }
 
-  EdgeR[][] withRev(Graph g, Node n)
+  EdgeR[][] withRev(ref Graph g, Node n)
   {
     auto r = new EdgeR[][](n);
 

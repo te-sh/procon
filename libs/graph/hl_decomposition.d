@@ -9,7 +9,7 @@ struct HlDecomposition(Tree, Node)
   Node[] head, path;
   Node[][] paths;
 
-  this(Tree t)
+  this(ref Tree t)
   {
     this.t = t;
     auto n = t.n;

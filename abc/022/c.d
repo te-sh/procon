@@ -1,21 +1,18 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
-alias graph = Graph!(int, size_t);
+void readV(T...)(ref T t){auto r=readln.splitter;foreach(ref v;t){v=r.front.to!(typeof(v));r.popFront;}}
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref v;a){v=r.front.to!T;r.popFront;}return a;}
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref v;a)v=readln.chomp.to!T;return a;}
 
 version(unittest) {} else
 void main()
 {
-  auto rd1 = readln.split.to!(size_t[]), n = rd1[0], m = rd1[1];
+  int n, m; readV(n, m);
 
-  auto gs = new int[](n), gr = new int[][](n-1, n-1);
-  foreach (i; 0..n-1) {
-    gr[i][] = graph.inf;
-    gr[i][i] = 0;
-  }
+  auto gs = new int[](n), gr = GraphM!int(n-1).init;
 
   foreach (_; 0..m) {
-    auto rd2 = readln.split;
-    auto u = rd2[0].to!size_t-1, v = rd2[1].to!size_t-1, l = rd2[2].to!int;
+    int u, v, l; readV(u, v, l); --u; --v;
     if (v == 0) swap(u, v);
     if (u == 0) {
       gs[v] = l;
@@ -24,12 +21,12 @@ void main()
     }
   }
 
-  size_t[] s;
+  int[] s;
   foreach (i; 1..n)
     if (gs[i]) s ~= i;
   auto ns = s.length;
 
-  auto d = graph.floydWarshal(gr);
+  auto d = FloydWarshal!(typeof(gr)).floydWarshal(gr);
 
   auto r = int.max;
   foreach (i; 0..ns-1)
@@ -38,29 +35,39 @@ void main()
       r = min(r, gs[si] + gs[sj] + d[si-1][sj-1]);
     }
 
-  writeln(r >= graph.inf ? -1 : r);
+  writeln(r >= gr.inf ? -1 : r);
 }
 
-template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+struct GraphM(W = int, W i = 10^^9)
 {
-  import std.algorithm, std.array, std.conv;
+  import std.typecons;
+  alias Wt = W, inf = i;
+  int n;
+  Wt[][] g;
+  mixin Proxy!g;
+  this(int n) { this.n = n; g = new Wt[][](n, n); }
+  ref auto init() { foreach (i; 0..n) { g[i][] = inf; g[i][i] = 0; } return this; }
+}
 
-  const inf = _inf, sent = _sent;
+template FloydWarshal(Graph)
+{
+  import std.algorithm, std.array, std.traits;
+  alias Wt = TemplateArgsOf!Graph[0];
 
-  Wt[][] floydWarshal(Wt[][] g)
+  Wt[][] floydWarshal(Graph g)
   {
     Wt[][] dist;
-    Node[][] inter;
+    int[][] inter;
     floydWarshal(g, dist, inter);
     return dist;
   }
 
-  void floydWarshal(Wt[][] g, out Wt[][] dist, out Node[][] inter)
+  void floydWarshal(Graph g, out Wt[][] dist, out int[][] inter)
   {
-    auto n = g.length;
-    dist = g.map!(i => i.dup).array;
+    auto n = g.n, sent = n;
+    dist = g.g.map!(i => i.dup).array;
 
-    inter = new Node[][](n, n);
+    inter = new int[][](n, n);
     foreach (i; 0..n) inter[i][] = sent;
 
     foreach (k; 0..n)
@@ -68,7 +75,7 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
         foreach (j; 0..n)
           if (dist[i][j] > dist[i][k] + dist[k][j]) {
             dist[i][j] = dist[i][k] + dist[k][j];
-            inter[i][j] = k.to!Node;
+            inter[i][j] = k;
           }
   }
 }

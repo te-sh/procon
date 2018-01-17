@@ -1,52 +1,60 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
-alias graph = Graph!(int, size_t);
+void readV(T...)(ref T t){auto r=readln.splitter;foreach(ref v;t){v=r.front.to!(typeof(v));r.popFront;}}
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref v;a){v=r.front.to!T;r.popFront;}return a;}
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref v;a)v=readln.chomp.to!T;return a;}
 
 version(unittest) {} else
 void main()
 {
-  auto rd = readln.split.to!(size_t[]), n = rd[0], m = rd[1];
+  int n, m; readV(n, m);
 
-  auto g = new int[][](n, n);
-  foreach (i; 0..n)
-    foreach (j; 0..n)
-      g[i][j] = i == j ? 0 : graph.inf;
+  auto g = GraphM!int(n).init;
 
   foreach (_; 0..m) {
-    auto rd2 = readln.split;
-    auto a = rd2[0].to!size_t-1, b = rd2[1].to!size_t-1, t = rd2[2].to!int;
+    int a, b, t; readV(a, b, t); --a, --b;
     g[a][b] = g[b][a] = t;
   }
 
-  auto d = graph.floydWarshal(g);
+  auto d = FloydWarshal!(typeof(g)).floydWarshal(g);
 
-  auto r = int(graph.inf);
+  auto r = g.inf;
   foreach (i; 0..n)
     r = min(r, d[i].reduce!max);
 
   writeln(r);
 }
 
-template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+struct GraphM(W = int, W i = 10^^9)
 {
-  import std.algorithm, std.array, std.conv;
+  import std.typecons;
+  alias Wt = W, inf = i;
+  int n;
+  Wt[][] g;
+  mixin Proxy!g;
+  this(int n) { this.n = n; g = new Wt[][](n, n); }
+  ref auto init() { foreach (i; 0..n) { g[i][] = inf; g[i][i] = 0; } return this; }
+}
 
-  const inf = _inf, sent = _sent;
+template FloydWarshal(Graph)
+{
+  import std.algorithm, std.array, std.traits;
+  alias Wt = TemplateArgsOf!Graph[0];
 
-  Wt[][] floydWarshal(Wt[][] g)
+  Wt[][] floydWarshal(Graph g)
   {
     Wt[][] dist;
-    Node[][] inter;
+    int[][] inter;
     floydWarshal(g, dist, inter);
     return dist;
   }
 
-  void floydWarshal(Wt[][] g, out Wt[][] dist, out Node[][] inter)
+  void floydWarshal(Graph g, out Wt[][] dist, out int[][] inter)
   {
-    auto n = g.length;
-    dist = g.map!(i => i.dup).array;
+    auto n = g.n, sent = n;
+    dist = g.g.map!(i => i.dup).array;
 
-    inter = new Node[][](n, n);
+    inter = new int[][](n, n);
     foreach (i; 0..n) inter[i][] = sent;
 
     foreach (k; 0..n)
@@ -54,7 +62,7 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
         foreach (j; 0..n)
           if (dist[i][j] > dist[i][k] + dist[k][j]) {
             dist[i][j] = dist[i][k] + dist[k][j];
-            inter[i][j] = k.to!Node;
+            inter[i][j] = k;
           }
   }
 }

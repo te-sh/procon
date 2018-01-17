@@ -6,7 +6,7 @@ template Dijkstra(Graph)
   alias Node = TemplateArgsOf!Graph[0], Wt = TemplateArgsOf!Graph[1];
   alias Edge = Graph.Edge;
 
-  void dijkstra(Graph g, Node s, out Wt[] dist, out Node[] prev)
+  void dijkstra(ref Graph g, Node s, out Wt[] dist, out Node[] prev)
   {
     auto n = g.n, sent = n;
 
@@ -32,7 +32,7 @@ template Dijkstra(Graph)
     }
   }
 
-  auto dijkstra(Graph g, Node s)
+  auto dijkstra(ref Graph g, Node s)
   {
     Wt[] dist;
     Node[] prev;

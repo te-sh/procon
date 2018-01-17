@@ -1,21 +1,15 @@
-struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+import graph;
+
+template EdmondsKarp(Graph)
 {
-  import std.algorithm, std.container;
+  import std.algorithm, std.container, std.traits;
+  alias Node = TemplateArgsOf!Graph[0], Wt = TemplateArgsOf!Graph[1];
 
-  const inf = _inf, sent = _sent;
-
-  struct Edge { Node src, dst; Wt cap; }
   struct EdgeR { Node src, dst; Wt cap, residue; Node rev; }
 
-  Edge[][] g;
-
-  this(size_t n) { g = new Edge[][](n); }
-  auto addEdge(Node src, Node dst, Wt cap) { g[src] ~= Edge(src, dst, cap); }
-
-  Wt edmondsKarp(Node s, Node t)
+  Wt edmondsKarp(ref Graph g, Node s, Node t)
   {
-    auto n = g.length;
-    auto adj = withRev(g, n);
+    auto n = g.n, sent = n, adj = withRev(g, n);
 
     ref auto revE(EdgeR e) { return adj[e.dst][e.rev]; }
 
@@ -40,7 +34,7 @@ struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
       }
       if (prev[t] == sent) break;
 
-      Wt inc = inf;
+      Wt inc = g.inf;
       for (auto u = t; u != s; u = adj[u][prev[u]].dst)
         inc = min(inc, revE(adj[u][prev[u]]).residue);
       for (auto u = t; u != s; u = adj[u][prev[u]].dst) {
@@ -53,7 +47,7 @@ struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
     return total;
   }
 
-  EdgeR[][] withRev(Edge[][] g, size_t n)
+  EdgeR[][] withRev(ref Graph g, Node n)
   {
     auto r = new EdgeR[][](n);
 
@@ -69,12 +63,12 @@ struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 
 unittest
 {
-  auto g = Graph!int(5);
+  auto g = GraphW!int(5);
   g.addEdge(0, 1, 5); g.addEdge(0, 2, 2); g.addEdge(0, 3, 8);
   g.addEdge(1, 2, 3); g.addEdge(1, 4, 4);
   g.addEdge(2, 3, 4); g.addEdge(2, 4, 4);
   g.addEdge(3, 4, 6);
 
-  auto d = g.edmondsKarp(0, 4);
+  auto d = EdmondsKarp!(typeof(g)).edmondsKarp(g, 0, 4);
   assert(d == 13);
 }
