@@ -1,16 +1,19 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 import std.typecons;  // Tuple, Nullable, BigFlags
 
-alias graph = Graph!(long, int, 10L^^18);
-alias edge = graph.Edge;
+void readV(T...)(ref T t){auto r=readln.splitter;foreach(ref v;t){v=r.front.to!(typeof(v));r.popFront;}}
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref v;a){v=r.front.to!T;r.popFront;}return a;}
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref v;a)v=readln.chomp.to!T;return a;}
+
+alias graph = GraphW!(int, long, 10L^^18);
 const ofs = 10L^^6;
 
 version(unittest) {} else
 void main()
 {
-  auto rd = readln.split.to!(int[]), n = rd[0], m = rd[1];
-  auto s = readln.split.to!(long[]), ss = s.sum*ofs;
-  auto t = readln.split.to!(long[]);
+  int n, m; readV(n, m);
+  auto s = readArray!long(n), ss = s.sum*ofs;
+  auto t = readArray!long(m);
   auto a = new int[][](n);
   foreach (i; 0..n) {
     auto rd2 = readln.splitter;
@@ -22,22 +25,21 @@ void main()
     }
   }
 
-  auto g = new edge[][](n+m+2), gs = n+m, gt = n+m+1;
+  auto g = graph(n+m+2), gs = n+m, gt = n+m+1;
 
-  foreach (i; 0..n)
-    g[i] ~= edge(i, gt, s[i]*ofs);
+  foreach (i; 0..n) g.addEdge(i, gt, s[i]*ofs);
 
   foreach (i; 0..n)
     foreach (j; a[i])
-      g[n+j] ~= edge(n+j, i, 10L^^18);
+      g.addEdge(n+j, i, 10L^^18);
 
   auto calc(long x)
   {
-    g[gs] = [];
+    g.g[gs] = [];
     foreach (j; 0..m)
-      g[gs] ~= edge(gs, n+j, t[j]*x);
+      g.addEdge(gs, n+j, t[j]*x);
 
-    auto f = graph.dinic(g, gs, gt);
+    auto f = Dinic!(typeof(g)).dinic(g, gs, gt);
     return f >= ss;
   }
 
@@ -46,21 +48,29 @@ void main()
   writefln("%.7f", bsearch.upperBound(tuple(0, false)).front[0].to!real/ofs);
 }
 
-template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+struct GraphW(N = int, W = int, W i = 10^^9)
 {
-  import std.algorithm, std.container, std.conv;
+  import std.typecons;
+  alias Node = N, Wt = W, inf = i;
+  struct Edge { Node src, dst; Wt wt; alias cap = wt; }
+  Node n;
+  Edge[][] g;
+  mixin Proxy!g;
+  this(Node n) { this.n = n; g = new Edge[][](n); }
+  void addEdge(Node u, Node v, Wt w) { g[u] ~= Edge(u, v, w); }
+  void addEdgeB(Node u, Node v, Wt w) { g[u] ~= Edge(u, v, w); g[v] ~= Edge(v, u, w); }
+}
 
-  const inf = _inf, sent = _sent;
+template Dinic(Graph)
+{
+  import std.algorithm, std.container, std.traits;
+  alias Node = TemplateArgsOf!Graph[0], Wt = TemplateArgsOf!Graph[1];
 
-  struct Edge { Node src, dst; Wt cap; }
   struct EdgeR { Node src, dst; Wt cap, flow; Node rev; }
 
-  Wt dinic(Edge[][] g, Node s, Node t)
+  Wt dinic(Graph g, Node s, Node t)
   {
-    auto n = g.length;
-    auto adj = withRev(g, n);
-
-    auto level = new int[](n);
+    auto n = g.n, adj = withRev(g, n), level = new int[](n);
 
     auto levelize()
     {
@@ -102,13 +112,13 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
     Wt flow = 0, f = 0;
 
     while (levelize >= 0)
-      while ((f = augment(s, inf)) > 0)
+      while ((f = augment(s, g.inf)) > 0)
         flow += f;
 
     return flow;
   }
 
-  EdgeR[][] withRev(Edge[][] g, size_t n)
+  EdgeR[][] withRev(Graph g, Node n)
   {
     auto r = new EdgeR[][](n);
 

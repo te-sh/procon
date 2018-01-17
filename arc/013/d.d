@@ -1,56 +1,68 @@
 import std.algorithm, std.conv, std.range, std.stdio, std.string;
 
-alias graph = Graph!(int, int);
-alias edge = graph.Edge;
+void readV(T...)(ref T t){auto r=readln.splitter;foreach(ref v;t){v=r.front.to!(typeof(v));r.popFront;}}
+T[] readArray(T)(size_t n){auto a=new T[](n),r=readln.splitter;foreach(ref v;a){v=r.front.to!T;r.popFront;}return a;}
+T[] readArrayM(T)(size_t n){auto a=new T[](n);foreach(ref v;a)v=readln.chomp.to!T;return a;}
+
+alias graph = GraphW!(int, int);
 
 version(unittest) {} else
 void main()
 {
   struct Pair { int a, b; }
-  auto n = readln.chomp.to!size_t;
+  int n; readV(n);
 
   auto v = 20*20*20, s = v*2, t = v*2+1;
-  auto g = new edge[][](v*2+2);
+  auto g = graph(v*2+2);
 
   auto addEdges(int w, int z)
   {
     foreach (i; 1..w) {
       auto v1 = i*z-1, v2 = (w-i)*z-1;
-      g[v1] ~= edge(v1, v2+v, 1);
+      g.addEdge(v1, v2+v, 1);
     }
   }
 
   foreach (_; 0..n) {
-    auto rd = readln.split.to!(int[]);
-    addEdges(rd[0], rd[1]*rd[2]);
-    addEdges(rd[1], rd[2]*rd[0]);
-    addEdges(rd[2], rd[0]*rd[1]);
+    int x, y, z; readV(x, y, z);
+    addEdges(x, y*z);
+    addEdges(y, z*x);
+    addEdges(z, x*y);
   }
 
   foreach (i; 0..v) {
-    g[s] ~= edge(s, i, 1);
-    g[i+v] ~= edge(i+v, t, 1);
+    g.addEdge(s, i, 1);
+    g.addEdge(i+v, t, 1);
   }
 
-  auto ans = g[0..v].filter!(e => e.length != 0).walkLength * 2 - graph.fordFulkerson(g, s, t);
+  auto f = FordFulkerson!(typeof(g)).fordFulkerson(g, s, t);
+  auto ans = g[0..v].filter!(e => e.length != 0).walkLength * 2 - f;
   writeln(ans);
 }
 
-template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+struct GraphW(N = int, W = int, W i = 10^^9)
 {
-  import std.algorithm, std.container, std.conv;
+  import std.typecons;
+  alias Node = N, Wt = W, inf = i;
+  struct Edge { Node src, dst; Wt wt; alias cap = wt; }
+  Node n;
+  Edge[][] g;
+  mixin Proxy!g;
+  this(Node n) { this.n = n; g = new Edge[][](n); }
+  void addEdge(Node u, Node v, Wt w) { g[u] ~= Edge(u, v, w); }
+  void addEdgeB(Node u, Node v, Wt w) { g[u] ~= Edge(u, v, w); g[v] ~= Edge(v, u, w); }
+}
 
-  const inf = _inf, sent = _sent;
+template FordFulkerson(Graph)
+{
+  import std.algorithm, std.container, std.traits;
+  alias Node = TemplateArgsOf!Graph[0], Wt = TemplateArgsOf!Graph[1];
 
-  struct Edge { Node src, dst; Wt cap; }
   struct EdgeR { Node src, dst; Wt cap, flow; Node rev; }
 
-  Wt fordFulkerson(Edge[][] g, Node s, Node t)
+  Wt fordFulkerson(Graph g, Node s, Node t)
   {
-    auto n = g.length;
-    auto adj = withRev(g, n);
-
-    auto visited = new bool[](n);
+    auto n = g.n, adj = withRev(g, n), visited = new bool[](n);
 
     Wt augment(Node u, Wt cur)
     {
@@ -73,7 +85,7 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 
     for (;;) {
       visited[] = false;
-      auto f = augment(s, inf);
+      auto f = augment(s, g.inf);
       if (f == 0) break;
       flow += f;
     }
@@ -81,7 +93,7 @@ template Graph(Wt, Node, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
     return flow;
   }
 
-  EdgeR[][] withRev(Edge[][] g, size_t n)
+  EdgeR[][] withRev(Graph g, Node n)
   {
     auto r = new EdgeR[][](n);
 

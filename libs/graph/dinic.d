@@ -1,23 +1,15 @@
-struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
+import graph;
+
+template Dinic(Graph)
 {
-  import std.algorithm, std.container, std.conv;
+  import std.algorithm, std.container, std.traits;
+  alias Node = TemplateArgsOf!Graph[0], Wt = TemplateArgsOf!Graph[1];
 
-  const inf = _inf, sent = _sent;
-
-  struct Edge { Node src, dst; Wt cap; }
   struct EdgeR { Node src, dst; Wt cap, flow; Node rev; }
 
-  Edge[][] g;
-
-  this(size_t n) { g = new Edge[][](n); }
-  auto addEdge(Node src, Node dst, Wt cap) { g[src] ~= Edge(src, dst, cap); }
-
-  Wt dinic(Node s, Node t)
+  Wt dinic(Graph g, Node s, Node t)
   {
-    auto n = g.length;
-    auto adj = withRev(g, n);
-
-    auto level = new int[](n);
+    auto n = g.n, adj = withRev(g, n), level = new int[](n);
 
     auto levelize()
     {
@@ -59,13 +51,13 @@ struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
     Wt flow = 0, f = 0;
 
     while (levelize >= 0)
-      while ((f = augment(s, inf)) > 0)
+      while ((f = augment(s, g.inf)) > 0)
         flow += f;
 
     return flow;
   }
 
-  EdgeR[][] withRev(Edge[][] g, size_t n)
+  EdgeR[][] withRev(Graph g, Node n)
   {
     auto r = new EdgeR[][](n);
 
@@ -81,12 +73,12 @@ struct Graph(Wt, Node = int, Wt _inf = 10 ^^ 9, Node _sent = Node.max)
 
 unittest
 {
-  auto g = Graph!int(5);
+  auto g = GraphW!int(5);
   g.addEdge(0, 1, 5); g.addEdge(0, 2, 2); g.addEdge(0, 3, 8);
   g.addEdge(1, 2, 3); g.addEdge(1, 4, 4);
   g.addEdge(2, 3, 4); g.addEdge(2, 4, 4);
   g.addEdge(3, 4, 6);
 
-  auto d = g.dinic(0, 4);
+  auto d = Dinic!(typeof(g)).dinic(g, 0, 4);
   assert(d == 13);
 }

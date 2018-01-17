@@ -14,7 +14,7 @@ struct GraphW(N = int, W = int, W i = 10^^9)
 {
   import std.typecons;
   alias Node = N, Wt = W, inf = i;
-  struct Edge { Node src, dst; Wt wt; }
+  struct Edge { Node src, dst; Wt wt; alias cap = wt; }
   Node n;
   Edge[][] g;
   mixin Proxy!g;
