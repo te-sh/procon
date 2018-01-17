@@ -3,9 +3,9 @@ pure T exEuclid(T)(T a, T b, ref T x, ref T y)
   auto g = a;
   x = 1;
   y = 0;
-  if (b != 0) {
-    g = exEuclid(b, a % b, y, x);
-    y -= a / b * x;
+  if (b) {
+    g = exEuclid(b, a%b, y, x);
+    y -= a/b*x;
   }
   return g;
 }

@@ -1,9 +1,9 @@
-pure T repeatedSquare(T, alias pred = "a * b", U)(T a, U n)
+pure T repeatedSquare(alias pred = "a * b", T, U)(T a, U n)
 {
   return repeatedSquare(a, n, T(1));
 }
 
-pure T repeatedSquare(T, alias pred = "a * b", U)(T a, U n, T init)
+pure T repeatedSquare(alias pred = "a * b", T, U)(T a, U n, T init)
 {
   import std.functional;
   alias predFun = binaryFun!pred;
@@ -12,8 +12,7 @@ pure T repeatedSquare(T, alias pred = "a * b", U)(T a, U n, T init)
 
   auto r = init;
   while (n > 0) {
-    if ((n & 1) == 1)
-      r = predFun(r, a);
+    if (n&1) r = predFun(r, a);
     a = predFun(a, a);
     n >>= 1;
   }

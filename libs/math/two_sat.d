@@ -1,7 +1,6 @@
 struct TwoSAT
 {
   import std.algorithm;
-  import std.stdio;
 
   int n;
   bool[] x;
