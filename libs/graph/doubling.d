@@ -6,17 +6,19 @@ struct Doubling(Tree)
   alias Node = Tree.Node;
   Tree t;
   alias t this;
+  Node sent;
   Node[][] ans;
   int log2md;
 
   this(ref Tree t)
   {
     this.t = t;
-    auto n = t.n, sent = n, md = maxDepth(n);
+    auto n = t.n, md = maxDepth(n);
+    sent = n;
     log2md = md == 0 ? 1 : md.bsr+1;
     ans = new Node[][](n, log2md);
     foreach (i; 0..n) {
-      ans[i][0] = t.parent[i];
+      ans[i][0] = i == t.root ? sent : t.parent[i];
       ans[i][1..$] = sent;
     }
 
@@ -63,7 +65,6 @@ struct Doubling(Tree)
     return t.parent[u];
   }
 }
-
 auto doubling(Tree)(ref Tree t) { return Doubling!Tree(t); }
 
 unittest

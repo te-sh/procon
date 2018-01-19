@@ -2,14 +2,12 @@
 number: '048'
 problem: D
 ---
-※ コードは途中である
-
 木を根付き木と考え, 頂点 $$ i $$ の深さを $$ D(i) $$, 頂点 $$ i, j $$ の LCA を $$ L_{ij} $$ とする.
 
 たこ焼き屋に寄らないときの所要時間は,
 
 $$
-T = 2(D(s)+D(t)-D(L_{st}))
+T = 2(D(s)+D(t)-2D(L_{st}))
 $$
 
 である.
@@ -20,8 +18,8 @@ $$
 
 $$
 \begin{align}
-T &= 2(D(s)-D(u))+3E(u)+(D(u)+D(t)-D(L_{st})) \\
-  &= 2D(s)+D(t)-D(L_{st})+3E(u)-D(u)
+T &= 2(D(s)-D(u))+3E(u)+(D(u)+D(t)-2D(L_{st})) \\
+  &= 2D(s)+D(t)-2D(L_{st})+3E(u)-D(u)
 \end{align}
 $$
 
@@ -29,8 +27,8 @@ $$
 
 $$
 \begin{align}
-T &= 2(D(s)+D(u)-D(L_{st}))+3E(u)+(D(t)-D(u)) \\
-  &= 2D(s)+D(t)-2D(L_{st})+3E(u)+D(u)
+T &= 2(D(s)+D(u)-2D(L_{st}))+3E(u)+(D(t)-D(u)) \\
+  &= 2D(s)+D(t)-4D(L_{st})+3E(u)+D(u)
 \end{align}
 $$
 

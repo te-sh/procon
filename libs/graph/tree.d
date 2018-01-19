@@ -49,7 +49,6 @@ struct Tree(Graph)
 
   auto children(Node u) { return g[u].filter!(v => v != parent[u]); }
 }
-
 ref auto makeTree(Graph)(ref Graph g) { return Tree!Graph(g); }
 
 unittest

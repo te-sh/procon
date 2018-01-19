@@ -24,12 +24,16 @@ void main()
       qu.insertBack(i);
     }
 
-  while (!qu.empty) {
-    auto u = qu.front; qu.removeFront();
-    foreach (v; g[u].filter!(v => !visited[v])) {
-      e[v] = e[u]+1;
-      visited[v] = true;
-      qu.insertBack(v);
+  if (qu.empty) {
+    e[] = 10^^8;
+  } else {
+    while (!qu.empty) {
+      auto u = qu.front; qu.removeFront();
+      foreach (v; g[u].filter!(v => !visited[v])) {
+        e[v] = e[u]+1;
+        visited[v] = true;
+        qu.insertBack(v);
+      }
     }
   }
 
@@ -39,7 +43,6 @@ void main()
   foreach (i; 0..n) {
     x1[i] = e[i]*3-tr.depth[i];
     x2[i] = e[i]*3+tr.depth[i];
-    
   }
 
   auto y1 = new int[][](n, tr.log2md), y2 = new int[][](n, tr.log2md);
@@ -57,25 +60,16 @@ void main()
       y1[u][i] = min(y1[u][i-1], y1[v][i-1]);
       y2[u][i] = min(y2[u][i-1], y2[v][i-1]);
     }
+    foreach (v; tr[u].filter!(v => v != tr.parent[u]))
+      qu.insertBack(v);
   }
 
-  auto calcMinY1(int u, int k)
+  auto calcMin(int[] x, int[][] y, int u, int k)
   {
-    int r = x1[u];
+    int r = x[u];
     for (auto i = 0; k > 0; k >>= 1, ++i)
       if (k&1) {
-        r = min(r, y1[u][i]);
-        u = tr.ans[u][i];
-      }
-    return r;
-  }
-
-  auto calcMinY2(int u, int k)
-  {
-    int r = x2[u];
-    for (auto i = 0; k > 0; k >>= 1, ++i)
-      if (k&1) {
-        r = min(r, y2[u][i]);
+        r = min(r, y[u][i]);
         u = tr.ans[u][i];
       }
     return r;
@@ -85,11 +79,11 @@ void main()
     int s, t; readV(s, t); --s; --t;
     auto lca = tr.lca(s, t);
 
-    auto r1 = (tr.depth[s]+tr.depth[t]-tr.depth[lca])*2;
-    auto r2 = calcMinY1(s, tr.depth[s]-tr.depth[lca])+
-      tr.depth[s]*2+tr.depth[t]-tr.depth[lca];
-    auto r3 = calcMinY2(t, tr.depth[t]-tr.depth[lca])+
+    auto r1 = (tr.depth[s]+tr.depth[t]-tr.depth[lca]*2)*2;
+    auto r2 = calcMin(x1, y1, s, tr.depth[s]-tr.depth[lca])+
       tr.depth[s]*2+tr.depth[t]-tr.depth[lca]*2;
+    auto r3 = calcMin(x2, y2, t, tr.depth[t]-tr.depth[lca])+
+      tr.depth[s]*2+tr.depth[t]-tr.depth[lca]*4;
 
     writeln(min(r1, r2, r3));
   }
@@ -97,7 +91,6 @@ void main()
 
 struct Graph(N = int)
 {
-  import std.typecons;
   alias Node = N;
   Node n;
   Node[][] g;
@@ -109,10 +102,9 @@ struct Graph(N = int)
 
 struct Tree(Graph)
 {
-  import std.algorithm, std.container, std.typecons;
-
+  import std.algorithm, std.container;
+  alias Node = Graph.Node;
   Graph g;
-  alias Node = g.Node;
   alias g this;
   Node root;
   Node[] parent;
@@ -157,18 +149,16 @@ struct Tree(Graph)
 
   auto children(Node u) { return g[u].filter!(v => v != parent[u]); }
 }
-
-ref auto makeTree(Graph)(Graph g) { return Tree!Graph(g); }
+ref auto makeTree(Graph)(ref Graph g) { return Tree!Graph(g); }
 
 struct Doubling(Tree)
 {
-  import std.algorithm, std.container, std.typecons, std.traits, core.bitop;
-
+  import std.algorithm, std.container, core.bitop;
+  alias Node = Tree.Node;
   Tree t;
-  alias Node = t.g.Node;
   alias t this;
-  Node[][] ans;
   Node sent;
+  Node[][] ans;
   int log2md;
 
   this(ref Tree t)
@@ -177,10 +167,9 @@ struct Doubling(Tree)
     auto n = t.n, md = maxDepth(n);
     sent = n;
     log2md = md == 0 ? 1 : md.bsr+1;
-
     ans = new Node[][](n, log2md);
     foreach (i; 0..n) {
-      ans[i][0] = t.parent[i];
+      ans[i][0] = i == t.root ? sent : t.parent[i];
       ans[i][1..$] = sent;
     }
 
@@ -227,5 +216,4 @@ struct Doubling(Tree)
     return t.parent[u];
   }
 }
-
-auto doubling(Tree)(Tree t) { return Doubling!Tree(t); }
+auto doubling(Tree)(ref Tree t) { return Doubling!Tree(t); }

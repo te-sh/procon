@@ -67,7 +67,6 @@ struct HlDecomposition(Tree)
     return t.depth[u] < t.depth[v] ? u : v;
   }
 }
-
 ref auto hlDecomposition(Tree)(ref Tree t) { return HlDecomposition!(Tree)(t); }
 
 unittest
