@@ -1,6 +1,6 @@
 pure T repeatedSquare(alias pred = "a * b", T, U)(T a, U n)
 {
-  return repeatedSquare(a, n, T(1));
+  return repeatedSquare!(pred, T, U)(a, n, T(1));
 }
 
 pure T repeatedSquare(alias pred = "a * b", T, U)(T a, U n, T init)
