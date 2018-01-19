@@ -2,11 +2,10 @@ import graph, tree;
 
 struct Doubling(Tree)
 {
-  import std.algorithm, std.container, std.typecons, std.traits, core.bitop;
+  import std.algorithm, std.container, core.bitop;
   alias Node = Tree.Node;
-
   Tree t;
-  mixin Proxy!t;
+  alias t this;
   Node[][] ans;
   int log2md;
 
@@ -65,7 +64,7 @@ struct Doubling(Tree)
   }
 }
 
-auto doubling(Tree)(Tree tree) { return Doubling!Tree(tree); }
+auto doubling(Tree)(ref Tree t) { return Doubling!Tree(t); }
 
 unittest
 {

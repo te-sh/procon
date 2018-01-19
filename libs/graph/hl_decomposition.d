@@ -1,11 +1,11 @@
 import graph, tree;
 
-struct HlDecomposition(Tree, Node)
+struct HlDecomposition(Tree)
 {
-  import std.container, std.typecons;
-
+  import std.container;
+  alias Node = Tree.Node;
   Tree t;
-  mixin Proxy!t;
+  alias t this;
   Node[] head, path;
   Node[][] paths;
 
@@ -68,7 +68,7 @@ struct HlDecomposition(Tree, Node)
   }
 }
 
-ref auto hlDecomposition(Tree)(Tree t) { return HlDecomposition!(Tree, t.Node)(t); }
+ref auto hlDecomposition(Tree)(ref Tree t) { return HlDecomposition!(Tree)(t); }
 
 unittest
 {

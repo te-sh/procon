@@ -2,11 +2,10 @@ import graph;
 
 struct Tree(Graph)
 {
-  import std.algorithm, std.container, std.typecons;
-
+  import std.algorithm, std.container;
+  alias Node = Graph.Node;
   Graph g;
-  mixin Proxy!g;
-  alias Node = g.Node;
+  alias g this;
   Node root;
   Node[] parent;
   int[] size, depth;
@@ -51,7 +50,7 @@ struct Tree(Graph)
   auto children(Node u) { return g[u].filter!(v => v != parent[u]); }
 }
 
-ref auto makeTree(Graph)(Graph g) { return Tree!Graph(g); }
+ref auto makeTree(Graph)(ref Graph g) { return Tree!Graph(g); }
 
 unittest
 {

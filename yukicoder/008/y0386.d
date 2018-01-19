@@ -41,11 +41,10 @@ void main()
 
 struct Graph(N = int)
 {
-  import std.typecons;
   alias Node = N;
   Node n;
   Node[][] g;
-  mixin Proxy!g;
+  alias g this;
   this(Node n) { this.n = n; g = new Node[][](n); }
   void addEdge(Node u, Node v) { g[u] ~= v; }
   void addEdgeB(Node u, Node v) { g[u] ~= v; g[v] ~= u; }
@@ -53,11 +52,10 @@ struct Graph(N = int)
 
 struct Tree(Graph)
 {
-  import std.algorithm, std.container, std.typecons;
-
+  import std.algorithm, std.container;
+  alias Node = Graph.Node;
   Graph g;
-  mixin Proxy!g;
-  alias Node = g.Node;
+  alias g this;
   Node root;
   Node[] parent;
   int[] size, depth;
@@ -102,15 +100,14 @@ struct Tree(Graph)
   auto children(Node u) { return g[u].filter!(v => v != parent[u]); }
 }
 
-ref auto makeTree(Graph)(Graph g) { return Tree!Graph(g); }
+ref auto makeTree(Graph)(ref Graph g) { return Tree!Graph(g); }
 
 struct Doubling(Tree)
 {
-  import std.algorithm, std.container, std.typecons, std.traits, core.bitop;
+  import std.algorithm, std.container, core.bitop;
   alias Node = Tree.Node;
-
   Tree t;
-  mixin Proxy!t;
+  alias t this;
   Node[][] ans;
   int log2md;
 
@@ -159,15 +156,14 @@ struct Doubling(Tree)
     v = ancestor(v, t.depth[v]-t.depth[u]);
     if (u == v) return u;
 
-    foreach_reverse (i; 0..log2md) {
+    foreach_reverse (i; 0..log2md)
       if (ans[u][i] != ans[v][i]) {
         u = ans[u][i];
         v = ans[v][i];
       }
-    }
 
     return t.parent[u];
   }
 }
 
-auto doubling(Tree)(Tree tree) { return Doubling!Tree(tree); }
+auto doubling(Tree)(ref Tree t) { return Doubling!Tree(t); }
