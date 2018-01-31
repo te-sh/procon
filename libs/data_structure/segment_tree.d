@@ -11,7 +11,7 @@ struct SegmentTree(T, alias pred = "a + b")
   {
     this.n = n;
     this.unit = unit;
-    an = (1 << ((n-1).bsr + 1));
+    an = n == 1 ? 1 : (1 << ((n-1).bsr + 1));
     buf = new T[](an*2);
     if (T.init != unit) buf[] = unit;
   }
